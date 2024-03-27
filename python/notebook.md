@@ -89,3 +89,27 @@ for in in car:
     print(i)  # Brand,Model,Color
 ```
 
+# List
+Here is the generic syntax and structure of a list comprehension:
+`<variable> = [<expression> for <item> in <iterable>]`
+1. <variable>: the variable that will store the newly created list
+2. <expresion>:  an expression performed on each item. If no specific action is needed, the item itself is used.
+3. <item>: the current item being processed
+4. <iterable>: any interable object, such as ranges, lists, strings, tuples and sets.
+
+List comprehensions are useful shorthands for such operations. They offer a shorter and more readable way to create lists with various setting using just a single line of code. List comprehensions are created using square brackets[].
+```python
+nums = [x for x in range(1,51)]
+```
+
+You can apple any expression to each item in the list being created with a list comprehension.
+```python
+nums = [x**2 for x in range(10)]
+```
+
+You can incorporate a condition into a list comprehension, placed after the interable.
+```python
+group = [x for x in user if x[0] == "B"]
+```
+
+
