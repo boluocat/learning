@@ -1,8 +1,12 @@
 
-# unpack
+# unpacking
 ```python
-years = (2022,2021.2020,2019)
+years = (2022,2021,2020,2019)
 lastest, *rest = years
+'''
+lastest = 2022
+*rest = 2021.2020,2019
+'''
 ```
 
 # Difference of List, Tuple, Set
