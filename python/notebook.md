@@ -93,6 +93,9 @@ for in in car:
     print(i)  # Brand,Model,Color
 ```
 
+While **strings** are the most commonly used data type for keys, other immutable types can also serve as keys. Values can be of any data type. So, you can't use a list to be as a key in a dictionary.
+
+
 # List
 Here is the generic syntax and structure of a list comprehension:
 `<variable> = [<expression> for <item> in <iterable>]`
