@@ -95,6 +95,19 @@ for in in car:
 
 While **strings** are the most commonly used data type for keys, other immutable types can also serve as keys. Values can be of any data type. So, you can't use a list to be as a key in a dictionary.
 
+The `update()` function can accept dictionaries with multiple items.If an item is new, it will be added to the original dictionary.
+```python
+car = {
+  "Brand": "Ford",
+  "Model": "Mustang",
+  "Color": "red"
+}
+car.update({"Color": "blue", "Year": 2018})
+
+# Output: {"Brand": "Ford","Model": "Mustang","Color": "blue","Year" : 2018}
+```
+
+
 
 # List
 Here is the generic syntax and structure of a list comprehension:
