@@ -456,3 +456,275 @@ print(sell_item("Smartphone"))
 Restocked: stock status for Laptop
 Sold: stock status for Smartphone
 ```
+
+
+# OOP
+
+In programming, there is a paradigm that follows the same principle as blueprint and instances. It's called object-oriented programming(OOP), blueprints are referred to as classes, and the instances are known as objects.
+
+In Python, you can define a class by using the class keyword followed by the class name and a colon. Like this:
+```python
+class Dog:
+```
+
+In the real world, everything has distinguishing characteristics: a dog has its breed, color, and name; a car had its brand, model, and color. In programming, classes and objects mirror this concept with attributes. Attributes are the properties that define an object's individuality within a class.
+
+To add attributes to a class, you must define the `__init__` method. This method's first parameter in always `self`, which represents the instance if the class. Following self, you specify the attributes you wish to include. Then, inside the function, you assign values to the initialized object's attributes, setting their initial state.
+
+After an object is created, you can access its attributes by using the dot. notation.
+
+In addition to attributes, you can add custom behaviors to a class by defining functions within it. These functions, known as methods, should include the `self` parameter to interact with the class instance. You can call these methods using the dot . notation, similar to how you access attributes.
+
+```python
+class Car:
+    # Initialize attributes
+    def __init__(self, brand, color):
+        # Assign values to attributes
+        self.brand = brand
+        self.color = color
+
+    def honk(self):
+        print('Beep beep')
+
+# Create am object of the car class
+my_car = Car('Audi', 'yellow')
+
+print(my_car.brand)
+print(my_car.color)
+may_car.honk()
+
+## output
+Audi
+yellow
+Beep beep
+```
+
+
+The main difference between functions and methods is that functions are independent and can be called on their own, while methods are associated with a class and can be called only with its instance. This means that you can't call a method without having the instance of a class where that method is defined. Like this:
+
+`print()` : this is a function
+`my_car.honk()`: this is a method
+
+There are many built-in method in Python, some of which you already are familiar with. For example, the `lower()`, `upper()` and `capitalize()` methods are commonly used in string objects.
+
+
+# Inheritance
+
+Inheritance is a key concept for situations where you have an existing class with defined attributes and behaviors. And you need a new class that not only shares these characteristics but also has its own unique ones. 
+
+Inheritance allows the new class to 'inherit' properties from the existing class while adding or modifying specific features as needed.
+
+```python
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def move(self):
+        print('Moving')
+
+
+# Inheritance from Animal class
+class Dog(Animal):
+    #Specific behavior
+    def bark(self):
+        print('Woof!')
+
+# Creating an instance
+my_dog = Dog('Bob')
+
+# Inherited attribute and behavior
+print(my_dog.name)
+my_dog.move()
+
+# Specific behavior
+my_dog.bark()
+```
+
+A class from which others are inherited is known as a superclass or parent class. Conversely, a class that inherits from another class is referred to as a subclass or child class.
+
+The Dog class inherits from the Animal class. Identify the elements. Like this: **child class: Dog,   parent class: Animal**
+
+What if we want to not only inherit attributes but also ass specific ones to a child class? In this case, we define an `__init__` method in the child class. Use `super().__init__()` to inherit attributes from the parent class, and then define any additional attributes as usual.
+
+```python
+# parent class
+class Animal:
+    def __init__(self, name):
+        self.name = name
+    
+    def move(self):
+        print('Moving')
+
+# Child class
+class Dog(Animal):
+    def __init__(self, name, breed, age):
+        # Initialize attributes of the superclass
+        super().__init__(name)
+        # Additional attributes specific to Dog
+        self.breed = breed
+        self.age = age
+
+    def bark(self):
+        print('Woof!')
+
+my_dog = Dog('Jax', 'Bulldog', 5)
+# inherited attribute
+print(my_dog.name)
+
+# Additional attributes
+print(my_dog.breed)
+print(my_dog.age)
+
+
+## output
+Jax
+Bulldog
+5
+```
+
+You can define methods with the same name in both parent and child classes, but they can perform different operations. This is known as **method overriding**. For instance, consider the Animal class with a sound method. The dog and cat child classes inherit the sound method from Animal but override it to suit their specific needs.
+
+You can use the super()  function if you want to call a method from the parent class while overriding it.
+
+This is useful when you want to add some functionality to the child class method without changing the original one.
+
+Method overriding is a demonstration of another key concept in OOP - polymorphism. Polymorphism lets objects use methods in their own way, even if they share the same name.
+
+In this example, even though each animal in the animals list may be of a different subclass, the code can call sound() on each without needing to know its specific type.
+
+```python
+# Parent class
+class Animal:
+    def __init__(slef, name):
+        self.name = name
+
+    def sound(self):
+        print('Making s sound')
+
+# Child class Dog
+class Dog(Animal):
+    def __init__(self, name, breed, age):
+        super().__init__(name)
+        self.breed = breed
+        self.age = age
+
+    # Overridden sound method for Dog
+    def sound(self):
+        print('Woof!')
+
+# Child class Cat
+class Cat(Animal):
+    def __init__(self, breed, age):
+        super().__init__(name)
+        self.breed =breed
+        self.age = age
+
+    def sound(self):
+        print('Meow!')
+
+
+# Creating instances
+my_dog = Dog('Jax', 'Bulldog', 5)
+my_cat = Cat('Lily', 'Ragdoll', 2)
+
+
+# Using overridden methods
+my_dog.sound()
+my_cat.sound()
+
+
+## output
+Woof!
+Meow!
+```
+
+# Data hiding
+
+Data hiding is a key idea in making code with objects(like in games or apps) safer and cleaner. It means keeping some parts of an object private so that only certain parts of your code can change them. This helps prevent mistakes and keeps your code easy to manage.
+
+In Python, data hiding has two levels. The first involves prefixing an attribute with a **single underscore _**, signaling **it's meant for internal use and should be viewed as 'protected'**.
+
+Attributes with a single underscore are accessible but considered protected by convention, signaling they're for internal use and should be accessed cautiously outside the class.
+
+To access a protected attribute outside of the class, use the single underscore prefix, as that's part of the attribute's name.
+```python
+class Car:
+    def __init__(self, model, year, odometer):
+        self.model = model
+        self.year = year
+        # Making the odometer attribute 'protected'
+        self._odometer = odometer
+
+    def describe_car(self):
+        print(self.year, self.model)
+
+    def read_odometer(self):
+        print('Odometer:', self._odometer, 'miles')
+
+my_car = Car('Audi', 2020, 15000)
+
+my_car.describe_car()
+my_car.read_odometer()
+
+# accessing the protected attribute
+print(my_car._odometer)
+
+```
+
+**The next level of data hiding involves making an attribute private**. This is achieved by prefixing the attribute name with **two underscores(e.g., __attribute)**. In this case, unlike protected attributes, this is not just a convention - it limits its access outside the class through name mangling, enhancing data protection and encapsulation. This method is used for sensitive or internal data, strongly discouraging external access.
+
+Accessing a private attribute with double underscores from outside the class cause an error, but it's accessible within class methods. This demonstrates encapsulation, protecting sensitive data from external access and ensuring it's only reachable via specific methods, aligning with object-oriented programming principles.
+
+Accessing a private attribute directly from outside its class is generally discouraged in Python. However, Python employs name mangling for private attributes, which means you can access them using a specific naming convention from outside the class if necessary. 
+
+```python
+class Car:
+    def __init__(self, model, year, odometer):
+        self.model = model
+        self.year = year
+        # Making the odometer attribute 'private'
+        self.__odometer = odometer
+
+    def describe_car(self):
+        print(self.year, self.model)
+
+    def read_odometer(self):
+        print('Odometer:', self.__odometer, 'miles')
+
+my_car = Car('Audi', 2020, 15000)
+
+# accessing the attribute within method
+my_car.read_odometer()
+
+# error
+print(my_car.__odometer)
+
+# accessing using name mangling
+print(my_car._Car__odometer)
+
+```
+
+You can also designate methods as protected or private, following the same convention as with attributes. Protected methods are prefixed with a single underscore and can be accessed within the class and its subclasses. However, private methods, marked by a double underscore, cannot be directly accessed from outside the class.
+
+```python
+class Car:
+    def __init__(self, model, year, odometer):
+        self.model = model
+        self.year = year
+        # Making the odometer attribute 'private'
+        self.__odometer = odometer
+
+    def _describe_car(self):
+        print(self.year, self.model)
+
+    def __read_odometer(self):
+        print('Odometer:', self.__odometer, 'miles')
+
+my_car = Car('Audi', 2020, 15000)
+
+# accessing protected method
+my_car._describe_car()
+
+# error when accessing a private method
+my_car.__read_odometer
+```
