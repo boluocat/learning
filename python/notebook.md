@@ -728,3 +728,80 @@ my_car._describe_car()
 # error when accessing a private method
 my_car.__read_odometer
 ```
+
+# Class and Static methods
+
+Class methods are called on the class itself, not on individual instances. This allows their use without needing to create a class instance. They are especially useful for actions relevant to the class as a whole, rather than actions limited to a single object.
+
+Class methods are created using the `@classmethod` decorate and take the `cls` argument, which refers to the class itself.
+
+We use `self` argument to identify a regular method, use `cls` argument to identify a class method.
+
+**To call a class method you don't need to create an instance of the class. Instead, just use the class name, followed by a dot and the class method name.**
+
+And if you already created an instance for a class, you can also call a class method with the instance name. Like this: `my_book.books_in_series("Harry Potter", 7)`
+
+```python
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+    # regular method
+    def describe_book(self):
+        print(self.title, 'by', self.author)
+    
+    # class method
+    @classmethod
+    def books_in_series(cls, series_name, number_of_book):
+        print('There are', number_of_books, 'books in the', series_name, 'series')
+
+# Creating an instance of Book
+my_book = Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling")
+
+# Using the class method to display information about the series
+Book.books_in_series("Harry Potter", 7)
+
+# Using an instance to call a class method
+my_book.books_in_series("Harry Potter", 7)
+
+# output
+There are 7 books in the Harry Potter series
+There are 7 books in the Harry Potter series
+
+```
+
+**Static methods** are similar to class methods, except they don't receive any additional arguments; they are identical to normal functions that belong to a class. They are marked with the `@staticmethod` decorator.
+
+```python
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+
+    # regular method
+    def describe_book(self):
+        print(self.title, 'by', self.author)
+    
+    # class method
+    @staticmethod
+    def books_in_series(series_name, number_of_book):
+        print('There are', number_of_books, 'books in the', series_name, 'series')
+
+# Creating an instance of Book
+my_book = Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling")
+
+# Using the instance method to describe the book
+my_book.describe_book()
+
+# Calling the static method
+Book.books_in_series("Harry Potter", 7)
+
+# output
+Harry Potter and the Sorcerer's Stone by J.K. Rowling
+There are 7 books in the Harry Potter series
+
+```
+
+When should you use static methods instead of class methods? Static methods don't accept the cls parameter, meaning they can't access or modify the class's state. **They are useful when you require functionality that doesn't depend on the class's behavior or instance state and doesn't affect it.** Essentially, static methods are suited for tasks that are self-contained and do not require knowledge of the class or instance.
+
