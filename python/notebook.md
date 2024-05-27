@@ -805,3 +805,85 @@ There are 7 books in the Harry Potter series
 
 When should you use static methods instead of class methods? Static methods don't accept the cls parameter, meaning they can't access or modify the class's state. **They are useful when you require functionality that doesn't depend on the class's behavior or instance state and doesn't affect it.** Essentially, static methods are suited for tasks that are self-contained and do not require knowledge of the class or instance.
 
+
+# Exception Handing
+
+Exceptions often arise from a variety of causes, including invalid input, out-of-bounds indices, incompatible type operations, and logical errors in the code. The good news is that exceptions are often predictable, allowing developers to anticipate and handle them effectively.
+
+There are some samples of exception types:
+
+1. Incorrect syntax: SyntaxError
+2. Out-of-rang: IndexError
+3. Variable is not defined: NameError
+
+
+Exceptions can often be predictable. To handle them and prevent program failure, you can use a `try/except` statement.
+
+The `try` block holds code that might cause an exception. If an exception occurs, execution of the try block stops, and the `except` block is executed, allowing the program to continue running.
+
+
+```python
+prices = [250, 300, '240', 400]
+try:
+    # block that may cause an exception
+    total = sum(prices)
+    print(total)
+except TypeError:
+    # to perform if there is an exception
+    print('Invalid data type')
+print('Happy Shopping')
+
+## output
+Invalid data type
+Happy Shopping
+```
+
+When you specify only one type of exception to be handled, other types of exceptions will not be covered. If these other exceptions occur, the program execution will fail. For instance, the execution of this code will fail because the exception it throws is not handled.
+
+```python
+colors = ['Red', 'Yellow', 'Green']
+try:
+    # index error
+    print(colors[10])
+
+# wrong exception
+except NameError:
+    print('Error')
+
+# will not be executed
+print('Happy Shopping')
+
+```
+
+You can have multiple except blocks to handle each possible exception specifically. As a best practice, it is recommended to output a definitive message for each type of handle exception.
+
+```python
+colors = ['Red', 'Yellow', 'Green']
+try:
+    print(colors[10])
+except IndexError:
+    print('Out of range')
+except NameError:
+    print('Variables is not defined')
+
+print('Happy Shopping')
+
+## output
+Out of range
+Happy Shopping
+```
+
+You can use `finally` statement to perform an operation after the `try/except` block, no matter if an exception occurred or not.
+```Python
+prices = [559, 879, 'N/A', 349]
+try:
+    print(sum(prices))
+except TypeError:
+    print('Check the price')
+finally:
+    print('Need help? Contact us')
+
+## output
+
+
+```
