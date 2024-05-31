@@ -371,6 +371,7 @@ Your account is created
 
 
 # Decorators
+If a function takes another function as an argument, it is called Higher-order function.
 
 Imagine you have a function that generates a message. Your goal is to create another function that takes this original function as an argument and converts the original message into uppercase, without altering the original function's code.
 
