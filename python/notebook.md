@@ -16,6 +16,12 @@ lastest = 2022
 |Tuple | F | Y | Y | Y |
 |Set | Y | F | F | F|
 
+# Tuple
+tuple is an array, but its space is fixed. It is an immutable array.
+
+When you create a tuple and it's less than 20, then Python will store it in a internal free list. If you create a same tuple later. Python will load this cache from existing free list. So, it can make process more efficient.
+
+
 # set
 Sets are unordered and don't support indexing or slicing. If you run these code, you will get an error:
 ```python
@@ -54,6 +60,8 @@ print(guests)  # {"Mery","Jonathan","Robert"}
 
 # Dictionary
 Dictinaries are collection types used to store data in `key:value` pairs, which are considered are items. They are ideal for organizing data into pairs, where each piece of data(value) has its unique identifier(key).
+
+You can use **immutable** item as the key. So that a list can not be a key in a dictionary. But you can use tuple or set to be a key.
 
 
 The `update()` function can accept dictionaries with multiple items. If an item is new, it will be added to the original dictionary.
@@ -280,7 +288,7 @@ pencil
 ```python
 def show_items(category, *args):
     print("Category: " + category)
-    for item in items:
+    for item in args:
         print(item)
 
 show_items("Electronics", "Laptop", "Smartphone", "Tablet")
@@ -500,8 +508,8 @@ yellow
 Beep beep
 ```
 
-
-The main difference between functions and methods is that functions are independent and can be called on their own, while methods are associated with a class and can be called only with its instance. This means that you can't call a method without having the instance of a class where that method is defined. Like this:
+**
+The main difference between functions and methods is that functions are independent and can be called on their own, while methods are associated with a class and can be called only with its instance. **This means that you can't call a method without having the instance of a class where that method is defined. Like this:
 
 `print()` : this is a function
 `my_car.honk()`: this is a method
