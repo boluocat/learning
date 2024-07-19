@@ -1,48 +1,40 @@
-- [data structure](#data-structure)
+- [Data Structure](#data-structure)
   - [Tuple](#tuple)
   - [set](#set)
   - [Dictionary](#dictionary)
   - [List](#list)
   - [Difference of List, Tuple, Set](#difference-of-list-tuple-set)
-- [unpacking](#unpacking)
-- [lambda](#lambda)
-- [map](#map)
-- [filter](#filter)
-- [Function](#function)
-  - [function](#function-1)
+- [Methods](#methods)
+  - [unpacking](#unpacking)
+  - [lambda](#lambda)
+  - [map](#map)
+  - [filter](#filter)
+- [Function, Class and Decorators](#function-class-and-decorators)
+  - [function](#function)
   - [args and kwargs](#args-and-kwargs)
-- [class and decorators](#class-and-decorators)
   - [Class and Static methods](#class-and-static-methods)
   - [Decorators](#decorators)
   - [OOP](#oop)
   - [Inheritance](#inheritance)
-- [Data hiding](#data-hiding)
-- [Exception Handing](#exception-handing)
+  - [Data hiding](#data-hiding)
+- [Error Handing](#error-handing)
+  - [Exception Handing](#exception-handing)
+- [Package](#package)
+  - [request](#request)
+    - [proxy](#proxy)
 
-# unpacking
-```python
-years = (2022,2021,2020,2019)
-lastest, *rest = years
-'''
-lastest = 2022
-*rest = 2021.2020,2019
-'''
-```
 
-# Difference of List, Tuple, Set
-| | Mutable| Ordered | Indexing | Duplicates|
-|-----|-----|-----|-----|-----|
-|List | Y | Y | Y | Y |
-|Tuple | F | Y | Y | Y |
-|Set | Y | F | F | F|
 
-# Tuple
+
+# Data Structure
+
+## Tuple
 tuple is an array, but its space is fixed. It is an immutable array.
 
 When you create a tuple and it's less than 20, then Python will store it in a internal free list. If you create a same tuple later. Python will load this cache from existing free list. So, it can make process more efficient.
 
 
-# set
+## set
 Sets are unordered and don't support indexing or slicing. If you run these code, you will get an error:
 ```python
 guests = {"Mery","Anna","Jonathan"}
@@ -78,7 +70,7 @@ guests.remove("Anna")
 print(guests)  # {"Mery","Jonathan","Robert"}
 ```
 
-# Dictionary
+## Dictionary
 Dictinaries are collection types used to store data in `key:value` pairs, which are considered are items. They are ideal for organizing data into pairs, where each piece of data(value) has its unique identifier(key).
 
 You can use **immutable** item as the key. So that a list can not be a key in a dictionary. But you can use tuple or set to be a key.
@@ -135,9 +127,7 @@ car.update({"Color": "blue", "Year": 2018})
 # Output: {"Brand": "Ford","Model": "Mustang","Color": "blue","Year" : 2018}
 ```
 
-
-
-# List
+## List
 Here is the generic syntax and structure of a list comprehension:
 `<variable> = [<expression> for <item> in <iterable>]`
 1. <variable>: the variable that will store the newly created list
@@ -160,8 +150,28 @@ You can incorporate a condition into a list comprehension, placed after the inte
 group = [x for x in user if x[0] == "B"]
 ```
 
+## Difference of List, Tuple, Set
+| | Mutable| Ordered | Indexing | Duplicates|
+|-----|-----|-----|-----|-----|
+|List | Y | Y | Y | Y |
+|Tuple | F | Y | Y | Y |
+|Set | Y | F | F | F|
 
-# lambda
+
+
+# Methods
+
+## unpacking
+```python
+years = (2022,2021,2020,2019)
+lastest, *rest = years
+'''
+lastest = 2022
+*rest = 2021.2020,2019
+'''
+```
+
+## lambda
 
 Lambda expression perform a single operation and return a result. They are defined using the lambda keyword, followed by its arguments, a colon and the expression to perform. 
 
@@ -195,7 +205,7 @@ print(res)
 ```
 
 
-# map
+## map
 
 The `map()` function applies a specified function to every element in an iterable, like lists or tuples. It produces a result that can be transformed into a list using the `list()` function for easy viewing or further use.
 
@@ -234,7 +244,7 @@ print(doubled)
 [2,4,6]
 ```
 
-# filter
+## filter
 
 The `filter` function, just like the `map()` function, takes in a function and an iterable as arguments. The key purpose of `filter()` is to **apply a condition specified in the provide function to each item in the iterable and return only those for which the function evaluates to True**.
 
@@ -250,8 +260,63 @@ print(filter_prof)
 ["Sofa", "Vase"]
 ```
 
+# Function, Class and Decorators
 
-# args and kwargs
+## function
+A function in Python can accept another function as an argument, it calls higher-order function.
+
+```python
+def song_name(name):
+    return "Song name:" + name
+
+def info(name, func):
+    print(func(name))
+
+info("Hallelujah", song_name)
+
+# output
+Song name: Hallelujah
+```
+
+In Python, functions can ne nested. This means you can define a function inside another functions's body.
+```python
+# outer function
+def outer_function():
+    print("Hello from the outer function")
+
+    # inner function
+    def inner_function():
+        print("Hello from inner function")
+    
+    inner_function()
+
+outer_function()
+
+# output
+Hello from the outer function
+Hello from the inner function
+
+```
+
+You can also return the result of the nested function directly from within the body of the parent function.
+```python
+def greet(name):
+    print("Hey", name)
+
+    def account():
+        return "Your account is created"
+
+    message = account()
+    return message
+
+print(greet("Bob"))
+
+## output
+Hey, Bob
+Your account is created
+```
+
+## args and kwargs
 
 When you calling a function, you need to use the same number of arguments that have been defined, in the same order.
 
@@ -343,62 +408,85 @@ In a function definition, the order of arguments is important. First, regular ar
 `def <func> (<argument>, <*args>, <**kwargs>)`
 
 
-# Function
-A function in Python can accept another function as an argument, it calls higher-order function.
+
+## Class and Static methods
+
+Class methods are called on the class itself, not on individual instances. This allows their use without needing to create a class instance. They are especially useful for actions relevant to the class as a whole, rather than actions limited to a single object.
+
+Class methods are created using the `@classmethod` decorate and take the `cls` argument, which refers to the class itself.
+
+We use `self` argument to identify a regular method, use `cls` argument to identify a class method.
+
+**To call a class method you don't need to create an instance of the class. Instead, just use the class name, followed by a dot and the class method name.**
+
+And if you already created an instance for a class, you can also call a class method with the instance name. Like this: `my_book.books_in_series("Harry Potter", 7)`
 
 ```python
-def song_name(name):
-    return "Song name:" + name
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
 
-def info(name, func):
-    print(func(name))
-
-info("Hallelujah", song_name)
-
-# output
-Song name: Hallelujah
-```
-
-In Python, functions can ne nested. This means you can define a function inside another functions's body.
-```python
-# outer function
-def outer_function():
-    print("Hello from the outer function")
-
-    # inner function
-    def inner_function():
-        print("Hello from inner function")
+    # regular method
+    def describe_book(self):
+        print(self.title, 'by', self.author)
     
-    inner_function()
+    # class method
+    @classmethod
+    def books_in_series(cls, series_name, number_of_book):
+        print('There are', number_of_books, 'books in the', series_name, 'series')
 
-outer_function()
+# Creating an instance of Book
+my_book = Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling")
+
+# Using the class method to display information about the series
+Book.books_in_series("Harry Potter", 7)
+
+# Using an instance to call a class method
+my_book.books_in_series("Harry Potter", 7)
 
 # output
-Hello from the outer function
-Hello from the inner function
+There are 7 books in the Harry Potter series
+There are 7 books in the Harry Potter series
 
 ```
 
-You can also return the result of the nested function directly from within the body of the parent function.
+**Static methods** are similar to class methods, except they don't receive any additional arguments; they are identical to normal functions that belong to a class. They are marked with the `@staticmethod` decorator.
+
 ```python
-def greet(name):
-    print("Hey", name)
+class Book:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
 
-    def account():
-        return "Your account is created"
+    # regular method
+    def describe_book(self):
+        print(self.title, 'by', self.author)
+    
+    # class method
+    @staticmethod
+    def books_in_series(series_name, number_of_book):
+        print('There are', number_of_books, 'books in the', series_name, 'series')
 
-    message = account()
-    return message
+# Creating an instance of Book
+my_book = Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling")
 
-print(greet("Bob"))
+# Using the instance method to describe the book
+my_book.describe_book()
 
-## output
-Hey, Bob
-Your account is created
+# Calling the static method
+Book.books_in_series("Harry Potter", 7)
+
+# output
+Harry Potter and the Sorcerer's Stone by J.K. Rowling
+There are 7 books in the Harry Potter series
+
 ```
 
+When should you use static methods instead of class methods? Static methods don't accept the cls parameter, meaning they can't access or modify the class's state. **They are useful when you require functionality that doesn't depend on the class's behavior or instance state and doesn't affect it.** Essentially, static methods are suited for tasks that are self-contained and do not require knowledge of the class or instance.
 
-# Decorators
+
+## Decorators
 If a function takes another function as an argument, it is called Higher-order function.
 
 Imagine you have a function that generates a message. Your goal is to create another function that takes this original function as an argument and converts the original message into uppercase, without altering the original function's code.
@@ -487,7 +575,7 @@ Sold: stock status for Smartphone
 ```
 
 
-# OOP
+## OOP
 
 In programming, there is a paradigm that follows the same principle as blueprint and instances. It's called object-oriented programming(OOP), blueprints are referred to as classes, and the instances are known as objects.
 
@@ -537,7 +625,7 @@ The main difference between functions and methods is that functions are independ
 There are many built-in method in Python, some of which you already are familiar with. For example, the `lower()`, `upper()` and `capitalize()` methods are commonly used in string objects.
 
 
-# Inheritance
+## Inheritance
 
 Inheritance is a key concept for situations where you have an existing class with defined attributes and behaviors. And you need a new class that not only shares these characteristics but also has its own unique ones. 
 
@@ -667,7 +755,7 @@ Woof!
 Meow!
 ```
 
-# Data hiding
+## Data hiding
 
 Data hiding is a key idea in making code with objects(like in games or apps) safer and cleaner. It means keeping some parts of an object private so that only certain parts of your code can change them. This helps prevent mistakes and keeps your code easy to manage.
 
@@ -758,84 +846,10 @@ my_car._describe_car()
 my_car.__read_odometer
 ```
 
-# Class and Static methods
 
-Class methods are called on the class itself, not on individual instances. This allows their use without needing to create a class instance. They are especially useful for actions relevant to the class as a whole, rather than actions limited to a single object.
+# Error Handing
 
-Class methods are created using the `@classmethod` decorate and take the `cls` argument, which refers to the class itself.
-
-We use `self` argument to identify a regular method, use `cls` argument to identify a class method.
-
-**To call a class method you don't need to create an instance of the class. Instead, just use the class name, followed by a dot and the class method name.**
-
-And if you already created an instance for a class, you can also call a class method with the instance name. Like this: `my_book.books_in_series("Harry Potter", 7)`
-
-```python
-class Book:
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-
-    # regular method
-    def describe_book(self):
-        print(self.title, 'by', self.author)
-    
-    # class method
-    @classmethod
-    def books_in_series(cls, series_name, number_of_book):
-        print('There are', number_of_books, 'books in the', series_name, 'series')
-
-# Creating an instance of Book
-my_book = Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling")
-
-# Using the class method to display information about the series
-Book.books_in_series("Harry Potter", 7)
-
-# Using an instance to call a class method
-my_book.books_in_series("Harry Potter", 7)
-
-# output
-There are 7 books in the Harry Potter series
-There are 7 books in the Harry Potter series
-
-```
-
-**Static methods** are similar to class methods, except they don't receive any additional arguments; they are identical to normal functions that belong to a class. They are marked with the `@staticmethod` decorator.
-
-```python
-class Book:
-    def __init__(self, title, author):
-        self.title = title
-        self.author = author
-
-    # regular method
-    def describe_book(self):
-        print(self.title, 'by', self.author)
-    
-    # class method
-    @staticmethod
-    def books_in_series(series_name, number_of_book):
-        print('There are', number_of_books, 'books in the', series_name, 'series')
-
-# Creating an instance of Book
-my_book = Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling")
-
-# Using the instance method to describe the book
-my_book.describe_book()
-
-# Calling the static method
-Book.books_in_series("Harry Potter", 7)
-
-# output
-Harry Potter and the Sorcerer's Stone by J.K. Rowling
-There are 7 books in the Harry Potter series
-
-```
-
-When should you use static methods instead of class methods? Static methods don't accept the cls parameter, meaning they can't access or modify the class's state. **They are useful when you require functionality that doesn't depend on the class's behavior or instance state and doesn't affect it.** Essentially, static methods are suited for tasks that are self-contained and do not require knowledge of the class or instance.
-
-
-# Exception Handing
+## Exception Handing
 
 Exceptions often arise from a variety of causes, including invalid input, out-of-bounds indices, incompatible type operations, and logical errors in the code. The good news is that exceptions are often predictable, allowing developers to anticipate and handle them effectively.
 
@@ -915,4 +929,68 @@ finally:
 ## output
 
 
+```
+
+
+# Package
+
+## request
+### proxy
+
+If you need a proxy to access a website, so in the code, you should give parameter `proxies` in `requests.get()`.
+
+And if you set proxy as a attribute in system environment, you need configure `proxies` parameter in code.
+
+```python
+import json
+import requests
+
+proxies={'http': 'http://127.0.0.1:7890', "https": "http://127.0.0.1:7890"}
+gemini_ticker = 'https://api.gemini.com/v1/pubticker/{}'
+symbol = 'btcusd'
+btc_data = requests.get(gemini_ticker.format(symbol), timeout = 5, proxies=proxies).json()  
+print(json.dumps(btc_data, indent=4))
+```
+
+When you don't set proxy as a system environment attribute, the `request` will not use proxy to visit url address.
+
+```python
+import requests
+
+print(requests.get('https://www.baidu.com'))
+```
+
+But if you already set proxy as a system environment attribute, and you don't want to use proxy to access a website in request. Then you can set `trust_env =  False` to avoid requesting through proxy.
+
+You can see these code, when you don't set `trust_env =  False`, and don't give a proxies to `get()`, you will get an error.
+
+```python
+import request
+import os
+
+os.environ['http_proxy'] = 'http://127.0.0.1:7890'
+os.environ['https_proxy'] = 'https://127.0.0.1:7890'
+
+s = requests.Session()
+print(s.get('https://www.baidu.com'))
+
+##### error
+requests.exceptions.ProxyError: HTTPSConnectionPool(host='www.baidu.com', port=443): Max retries exceeded with url: / (Caused by ProxyError('Cannot connect to proxy.', FileNotFoundError(2, 'No such file or directory')))
+```
+
+The following code is showing after adding `trust_env =  False`. It return a 200 response.
+
+```python
+import os
+import request
+
+os.environ['http_proxy'] = 'http://127.0.0.1:7890'
+os.environ['https_proxy'] = 'https://127.0.0.1:7890'
+
+s = requests.Session()
+s.trust_env = False
+print(s.get('https://www.baidu.com'))
+
+#### output
+<Response [200]>
 ```
