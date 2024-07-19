@@ -1,3 +1,23 @@
+- [data structure](#data-structure)
+  - [Tuple](#tuple)
+  - [set](#set)
+  - [Dictionary](#dictionary)
+  - [List](#list)
+  - [Difference of List, Tuple, Set](#difference-of-list-tuple-set)
+- [unpacking](#unpacking)
+- [lambda](#lambda)
+- [map](#map)
+- [filter](#filter)
+- [Function](#function)
+  - [function](#function-1)
+  - [args and kwargs](#args-and-kwargs)
+- [class and decorators](#class-and-decorators)
+  - [Class and Static methods](#class-and-static-methods)
+  - [Decorators](#decorators)
+  - [OOP](#oop)
+  - [Inheritance](#inheritance)
+- [Data hiding](#data-hiding)
+- [Exception Handing](#exception-handing)
 
 # unpacking
 ```python
