@@ -119,3 +119,121 @@ SELECT firstname, lastname, age, city FROM Customers
 UNION
 SELECT firstname, lastname, age, NULL FROM Contacts
 ```
+
+
+
+
+
+# order by
+
+
+
+# concat
+
+
+
+# where
+
+对单行数据进行过滤
+
+行级过滤，能用where先用where.
+
+# limit  (mysql)/rownum
+
+```sql
+-- from n to m row
+select * from emp limit 1,3;
+
+```
+
+# floor/ceil
+
+
+
+# EXTRACT (datetime)
+
+EXTRACT extracts and returns the value of a specified datetime field from a datetime or interval expression. 
+
+
+
+# ifnull
+
+
+
+# MD5
+
+不可解密
+
+
+
+# string, date, num translate
+
+DATE_FORMATE()
+
+STRING_TO_DATE()
+
+DATE()
+
+to_num()
+
+to_char()
+
+
+
+
+
+# max min sum avg count
+
+要带group by进行分组。
+
+**如果在oracle不进行分组，会报错；但在MYSQL中不会报错，但结果是错误的。**
+
+
+
+# 分组函数
+
+## group by
+
+
+
+## having
+
+```sql
+group by
+having
+```
+
+对分组之后的数据进行过滤，可以带函数
+
+组级过滤。能用where先用where.
+
+
+
+# 单表查询的执行顺序
+
+```sql
+select
+from
+where
+group by
+having
+order by
+
+from -> where -> group by -> having -> select -> order by
+```
+
+
+
+# 多表查询
+
+**如果不加任何关联条件，查询结果总记录数为a*b = 笛卡尔积**
+
+用条件进行关联：
+
+- 等值关联：where a=b
+- 非等值关联：where  a.cc between b.xx and b.yy
+
+
+
+
+
