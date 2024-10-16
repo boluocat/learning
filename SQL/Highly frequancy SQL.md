@@ -399,6 +399,375 @@ def invalid_tweets(tweets: pd.DataFrame) -> pd.DataFrame:
     return invalid_id
 ```
 
+## [1821. 寻找今年具有正收入的客户](https://leetcode.cn/problems/find-customers-with-positive-revenue-this-year/)
+
+表：`Customers`
+
+```
++--------------+------+
+| Column Name  | Type |
++--------------+------+
+| customer_id  | int  |
+| year         | int  |
+| revenue      | int  |
++--------------+------+
+(customer_id, year) 是该表的主键（具有唯一值的列的组合）。
+这个表包含客户 ID 和不同年份的客户收入。
+注意，这个收入可能是负数。
+```
+
+ 
+
+编写一个解决方案来报告 2021 年具有 **正收入** 的客户。
+
+可以以 **任意顺序** 返回结果表。
+
+结果格式如下示例所示。
+
+ 
+
+**示例 1:**
+
+```
+Input:
+Customers
++-------------+------+---------+
+| customer_id | year | revenue |
++-------------+------+---------+
+| 1           | 2018 | 50      |
+| 1           | 2021 | 30      |
+| 1           | 2020 | 70      |
+| 2           | 2021 | -50     |
+| 3           | 2018 | 10      |
+| 3           | 2016 | 50      |
+| 4           | 2021 | 20      |
++-------------+------+---------+
+
+Output:
++-------------+
+| customer_id |
++-------------+
+| 1           |
+| 4           |
++-------------+
+客户 1 在 2021 年的收入等于 30 。
+客户 2 在 2021 年的收入等于 -50 。
+客户 3 在 2021 年没有收入。
+客户 4 在 2021 年的收入等于 20 。
+因此，只有客户 1 和 4 在 2021 年有正收入。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select customer_id
+from customers
+where revenue > 0 and year = 2021
+```
+
+## [183. 从不订购的客户](https://leetcode.cn/problems/customers-who-never-order/)
+
+`Customers` 表：
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| id          | int     |
+| name        | varchar |
++-------------+---------+
+在 SQL 中，id 是该表的主键。
+该表的每一行都表示客户的 ID 和名称。
+```
+
+`Orders` 表：
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| customerId  | int  |
++-------------+------+
+在 SQL 中，id 是该表的主键。
+customerId 是 Customers 表中 ID 的外键( Pandas 中的连接键)。
+该表的每一行都表示订单的 ID 和订购该订单的客户的 ID。
+```
+
+ 
+
+找出所有从不点任何东西的顾客。
+
+以 **任意顺序** 返回结果表。
+
+结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Customers table:
++----+-------+
+| id | name  |
++----+-------+
+| 1  | Joe   |
+| 2  | Henry |
+| 3  | Sam   |
+| 4  | Max   |
++----+-------+
+Orders table:
++----+------------+
+| id | customerId |
++----+------------+
+| 1  | 3          |
+| 2  | 1          |
++----+------------+
+输出：
++-----------+
+| Customers |
++-----------+
+| Henry     |
+| Max       |
++-----------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select c.name customers
+from customers c
+left join orders o
+on c.id = o.customerId
+where o.customerId is null
+```
+
+## [1873. 计算特殊奖金](https://leetcode.cn/problems/calculate-special-bonus/)
+
+表: `Employees`
+
+```
++-------------+---------+
+| 列名        | 类型     |
++-------------+---------+
+| employee_id | int     |
+| name        | varchar |
+| salary      | int     |
++-------------+---------+
+employee_id 是这个表的主键(具有唯一值的列)。
+此表的每一行给出了雇员id ，名字和薪水。
+```
+
+ 
+
+编写解决方案，计算每个雇员的奖金。如果一个雇员的 id 是 **奇数** 并且他的名字不是以 `'M'` **开头**，那么他的奖金是他工资的 `100%` ，否则奖金为 `0` 。
+
+返回的结果按照 `employee_id` 排序。
+
+返回结果格式如下面的例子所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Employees 表:
++-------------+---------+--------+
+| employee_id | name    | salary |
++-------------+---------+--------+
+| 2           | Meir    | 3000   |
+| 3           | Michael | 3800   |
+| 7           | Addilyn | 7400   |
+| 8           | Juan    | 6100   |
+| 9           | Kannon  | 7700   |
++-------------+---------+--------+
+输出：
++-------------+-------+
+| employee_id | bonus |
++-------------+-------+
+| 2           | 0     |
+| 3           | 0     |
+| 7           | 7400  |
+| 8           | 0     |
+| 9           | 7700  |
++-------------+-------+
+解释：
+因为雇员id是偶数，所以雇员id 是2和8的两个雇员得到的奖金是0。
+雇员id为3的因为他的名字以'M'开头，所以，奖金是0。
+其他的雇员得到了百分之百的奖金。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select employee_id,
+case when name not like 'M%' and mod(employee_id,2)=1 then salary else 0 end as bonus
+from employees
+order by employee_id asc
+```
+
+## [1398. 购买了产品 A 和产品 B 却没有购买产品 C 的顾客](https://leetcode.cn/problems/customers-who-bought-products-a-and-b-but-not-c/)
+
+ `Customers` 表：
+
+```
++---------------------+---------+
+| Column Name         | Type    |
++---------------------+---------+
+| customer_id         | int     |
+| customer_name       | varchar |
++---------------------+---------+
+customer_id 是这张表中具有唯一值的列。
+customer_name 是顾客的名称。
+```
+
+ 
+
+`Orders` 表：
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| order_id      | int     |
+| customer_id   | int     |
+| product_name  | varchar |
++---------------+---------+
+order_id 是这张表中具有唯一值的列。
+customer_id 是购买了名为 "product_name" 产品顾客的id。
+```
+
+ 
+
+请你编写解决方案，报告购买了产品 **"A"**，**"B"** 但没有购买产品 **"C"** 的客户的 customer_id 和 customer_name，因为我们想推荐他们购买这样的产品。
+
+返回按 `customer_id` **排序** 的结果表。
+
+返回结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Customers table:
++-------------+---------------+
+| customer_id | customer_name |
++-------------+---------------+
+| 1           | Daniel        |
+| 2           | Diana         |
+| 3           | Elizabeth     |
+| 4           | Jhon          |
++-------------+---------------+
+
+Orders table:
++------------+--------------+---------------+
+| order_id   | customer_id  | product_name  |
++------------+--------------+---------------+
+| 10         |     1        |     A         |
+| 20         |     1        |     B         |
+| 30         |     1        |     D         |
+| 40         |     1        |     C         |
+| 50         |     2        |     A         |
+| 60         |     3        |     A         |
+| 70         |     3        |     B         |
+| 80         |     3        |     D         |
+| 90         |     4        |     C         |
++------------+--------------+---------------+
+输出：
++-------------+---------------+
+| customer_id | customer_name |
++-------------+---------------+
+| 3           | Elizabeth     |
++-------------+---------------+
+解释：
+只有 customer_id 为 3 的顾客购买了产品 A 和产品 B ，却没有购买产品 C 。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+
+select pl.customer_id customer_id, c.customer_name customer_name
+from customers c,
+(
+select customer_id, 
+listagg(product_name,',') within group (order by product_name) product_list
+from orders
+group by customer_id
+) pl
+where pl.product_list  like '%A%B%' and pl.product_list not like '%C%' and pl.customer_id = c.customer_id
+```
+
+## [1112. 每位学生的最高成绩](https://leetcode.cn/problems/highest-grade-for-each-student/)
+
+表：`Enrollments`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| student_id    | int     |
+| course_id     | int     |
+| grade         | int     |
++---------------+---------+
+(student_id, course_id) 是该表的主键（具有唯一值的列的组合）。
+grade 不会为 NULL。
+```
+
+ 
+
+编写解决方案，找出每位学生获得的最高成绩和它所对应的科目，若科目成绩并列，取 `course_id` 最小的一门。查询结果需按 `student_id` 增序进行排序。
+
+查询结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Enrollments 表：
++------------+-------------------+
+| student_id | course_id | grade |
++------------+-----------+-------+
+| 2          | 2         | 95    |
+| 2          | 3         | 95    |
+| 1          | 1         | 90    |
+| 1          | 2         | 99    |
+| 3          | 1         | 80    |
+| 3          | 2         | 75    |
+| 3          | 3         | 82    |
++------------+-----------+-------+
+输出：
++------------+-------------------+
+| student_id | course_id | grade |
++------------+-----------+-------+
+| 1          | 2         | 99    |
+| 2          | 2         | 95    |
+| 3          | 3         | 82    |
++------------+-----------+-------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+
+select student_id, course_id, grade
+from
+(
+    select student_id, course_id, grade,
+rank() over (partition by student_id order by grade desc, course_id asc) ranks
+from enrollments
+)
+where ranks=1
+```
+
+
+
 # 连接
 
 ![img](https://www.runoob.com/wp-content/uploads/2019/01/sql-join.png)
@@ -4673,4 +5042,6 @@ from employee
 where salary_rank <=3 and r.departmentid=d.id
 order by d.name
 ```
+
+
 
