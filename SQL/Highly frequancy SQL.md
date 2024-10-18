@@ -1880,6 +1880,638 @@ def confirmation_rate(signups: pd.DataFrame, confirmations: pd.DataFrame) -> pd.
     return confirmed[['user_id','confirmation_rate']]
 ```
 
+## [175. 组合两个表](https://leetcode.cn/problems/combine-two-tables/)
+
+表: `Person`
+
+```
++-------------+---------+
+| 列名         | 类型     |
++-------------+---------+
+| PersonId    | int     |
+| FirstName   | varchar |
+| LastName    | varchar |
++-------------+---------+
+personId 是该表的主键（具有唯一值的列）。
+该表包含一些人的 ID 和他们的姓和名的信息。
+```
+
+ 
+
+表: `Address`
+
+```
++-------------+---------+
+| 列名         | 类型    |
++-------------+---------+
+| AddressId   | int     |
+| PersonId    | int     |
+| City        | varchar |
+| State       | varchar |
++-------------+---------+
+addressId 是该表的主键（具有唯一值的列）。
+该表的每一行都包含一个 ID = PersonId 的人的城市和州的信息。
+```
+
+ 
+
+编写解决方案，报告 `Person` 表中每个人的姓、名、城市和州。如果 `personId` 的地址不在 `Address` 表中，则报告为 `null` 。
+
+以 **任意顺序** 返回结果表。
+
+结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入: 
+Person表:
++----------+----------+-----------+
+| personId | lastName | firstName |
++----------+----------+-----------+
+| 1        | Wang     | Allen     |
+| 2        | Alice    | Bob       |
++----------+----------+-----------+
+Address表:
++-----------+----------+---------------+------------+
+| addressId | personId | city          | state      |
++-----------+----------+---------------+------------+
+| 1         | 2        | New York City | New York   |
+| 2         | 3        | Leetcode      | California |
++-----------+----------+---------------+------------+
+输出: 
++-----------+----------+---------------+----------+
+| firstName | lastName | city          | state    |
++-----------+----------+---------------+----------+
+| Allen     | Wang     | Null          | Null     |
+| Bob       | Alice    | New York City | New York |
++-----------+----------+---------------+----------+
+解释: 
+地址表中没有 personId = 1 的地址，所以它们的城市和州返回 null。
+addressId = 1 包含了 personId = 2 的地址信息。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select p.firstname, p.lastname, a.city, a.state
+from person p
+left join address a
+on p.personid = a.personid
+```
+
+## [1607. 没有卖出的卖家](https://leetcode.cn/problems/sellers-with-no-sales/)
+
+表: `Customer`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| customer_id   | int     |
+| customer_name | varchar |
++---------------+---------+
+customer_id 是该表具有唯一值的列。
+该表的每行包含网上商城的每一位顾客的信息。
+```
+
+ 
+
+表: `Orders`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| order_id      | int     |
+| sale_date     | date    |
+| order_cost    | int     |
+| customer_id   | int     |
+| seller_id     | int     |
++---------------+---------+
+order_id 是该表具有唯一值的列。
+该表的每行包含网上商城的所有订单的信息.
+sale_date 是顾客 customer_id 和卖家 seller_id 之间交易的日期.
+```
+
+ 
+
+表: `Seller`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| seller_id     | int     |
+| seller_name   | varchar |
++---------------+---------+
+seller_id 是该表主具有唯一值的列。
+该表的每行包含每一位卖家的信息.
+```
+
+ 
+
+写一个解决方案, 报告所有在 `2020` 年度没有任何卖出的卖家的名字。
+
+返回结果按照 `seller_name` **升序排列。**
+
+查询结果格式如下例所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Customer 表:
++--------------+---------------+
+| customer_id  | customer_name |
++--------------+---------------+
+| 101          | Alice         |
+| 102          | Bob           |
+| 103          | Charlie       |
++--------------+---------------+
+Orders 表:
++-------------+------------+--------------+-------------+-------------+
+| order_id    | sale_date  | order_cost   | customer_id | seller_id   |
++-------------+------------+--------------+-------------+-------------+
+| 1           | 2020-03-01 | 1500         | 101         | 1           |
+| 2           | 2020-05-25 | 2400         | 102         | 2           |
+| 3           | 2019-05-25 | 800          | 101         | 3           |
+| 4           | 2020-09-13 | 1000         | 103         | 2           |
+| 5           | 2019-02-11 | 700          | 101         | 2           |
++-------------+------------+--------------+-------------+-------------+
+Seller 表:
++-------------+-------------+
+| seller_id   | seller_name |
++-------------+-------------+
+| 1           | Daniel      |
+| 2           | Elizabeth   |
+| 3           | Frank       |
++-------------+-------------+
+输出：
++-------------+
+| seller_name |
++-------------+
+| Frank       |
++-------------+
+解释：
+Daniel 在 2020 年 3 月卖出 1 次。
+Elizabeth 在 2020 年卖出 2 次, 在 2019 年卖出 1 次。
+Frank 在 2019 年卖出 1 次, 在 2020 年没有卖出。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select s.seller_name
+from seller s
+left join (select * from orders where to_char(sale_date,'yyyy') = '2020') o
+on s.seller_id = o.seller_id 
+where o.seller_id is null 
+order by seller_name asc
+```
+
+## [1407. 排名靠前的旅行者](https://leetcode.cn/problems/top-travellers/)
+
+表：`Users`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| name          | varchar |
++---------------+---------+
+id 是该表中具有唯一值的列。
+name 是用户名字。
+```
+
+ 
+
+表：`Rides`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| user_id       | int     |
+| distance      | int     |
++---------------+---------+
+id 是该表中具有唯一值的列。
+user_id 是本次行程的用户的 id, 而该用户此次行程距离为 distance 。
+```
+
+ 
+
+编写解决方案，报告每个用户的旅行距离。
+
+返回的结果表单，以 `travelled_distance` **降序排列** ，如果有两个或者更多的用户旅行了相同的距离, 那么再以 `name` **升序排列** 。
+
+返回结果格式如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Users 表：
++------+-----------+
+| id   | name      |
++------+-----------+
+| 1    | Alice     |
+| 2    | Bob       |
+| 3    | Alex      |
+| 4    | Donald    |
+| 7    | Lee       |
+| 13   | Jonathan  |
+| 19   | Elvis     |
++------+-----------+
+
+Rides 表：
++------+----------+----------+
+| id   | user_id  | distance |
++------+----------+----------+
+| 1    | 1        | 120      |
+| 2    | 2        | 317      |
+| 3    | 3        | 222      |
+| 4    | 7        | 100      |
+| 5    | 13       | 312      |
+| 6    | 19       | 50       |
+| 7    | 7        | 120      |
+| 8    | 19       | 400      |
+| 9    | 7        | 230      |
++------+----------+----------+
+输出：
++----------+--------------------+
+| name     | travelled_distance |
++----------+--------------------+
+| Elvis    | 450                |
+| Lee      | 450                |
+| Bob      | 317                |
+| Jonathan | 312                |
+| Alex     | 222                |
+| Alice    | 120                |
+| Donald   | 0                  |
++----------+--------------------+
+解释：
+Elvis 和 Lee 旅行了 450 英里，Elvis 是排名靠前的旅行者，因为他的名字在字母表上的排序比 Lee 更小。
+Bob, Jonathan, Alex 和 Alice 只有一次行程，我们只按此次行程的全部距离对他们排序。
+Donald 没有任何行程, 他的旅行距离为 0。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select u.name, nvl(d.total_distance,0) travelled_distance
+from users u
+left join (select user_id, sum(distance) total_distance from rides group by user_id) d
+on u.id = d.user_id
+order by  nvl(d.total_distance,0) desc, u.name asc
+```
+
+## [607. 销售员](https://leetcode.cn/problems/sales-person/)
+
+表: `SalesPerson`
+
+```
++-----------------+---------+
+| Column Name     | Type    |
++-----------------+---------+
+| sales_id        | int     |
+| name            | varchar |
+| salary          | int     |
+| commission_rate | int     |
+| hire_date       | date    |
++-----------------+---------+
+sales_id 是该表的主键列(具有唯一值的列)。
+该表的每一行都显示了销售人员的姓名和 ID ，以及他们的工资、佣金率和雇佣日期。
+```
+
+ 
+
+表: `Company`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| com_id      | int     |
+| name        | varchar |
+| city        | varchar |
++-------------+---------+
+com_id 是该表的主键列(具有唯一值的列)。
+该表的每一行都表示公司的名称和 ID ，以及公司所在的城市。
+```
+
+ 
+
+表: `Orders`
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| order_id    | int  |
+| order_date  | date |
+| com_id      | int  |
+| sales_id    | int  |
+| amount      | int  |
++-------------+------+
+order_id 是该表的主键列(具有唯一值的列)。
+com_id 是 Company 表中 com_id 的外键（reference 列）。
+sales_id 是来自销售员表 sales_id 的外键（reference 列）。
+该表的每一行包含一个订单的信息。这包括公司的 ID 、销售人员的 ID 、订单日期和支付的金额。
+```
+
+ 
+
+编写解决方案，找出没有任何与名为 **“RED”** 的公司相关的订单的所有销售人员的姓名。
+
+以 **任意顺序** 返回结果表。
+
+返回结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+SalesPerson 表:
++----------+------+--------+-----------------+------------+
+| sales_id | name | salary | commission_rate | hire_date  |
++----------+------+--------+-----------------+------------+
+| 1        | John | 100000 | 6               | 4/1/2006   |
+| 2        | Amy  | 12000  | 5               | 5/1/2010   |
+| 3        | Mark | 65000  | 12              | 12/25/2008 |
+| 4        | Pam  | 25000  | 25              | 1/1/2005   |
+| 5        | Alex | 5000   | 10              | 2/3/2007   |
++----------+------+--------+-----------------+------------+
+Company 表:
++--------+--------+----------+
+| com_id | name   | city     |
++--------+--------+----------+
+| 1      | RED    | Boston   |
+| 2      | ORANGE | New York |
+| 3      | YELLOW | Boston   |
+| 4      | GREEN  | Austin   |
++--------+--------+----------+
+Orders 表:
++----------+------------+--------+----------+--------+
+| order_id | order_date | com_id | sales_id | amount |
++----------+------------+--------+----------+--------+
+| 1        | 1/1/2014   | 3      | 4        | 10000  |
+| 2        | 2/1/2014   | 4      | 5        | 5000   |
+| 3        | 3/1/2014   | 1      | 1        | 50000  |
+| 4        | 4/1/2014   | 1      | 4        | 25000  |
++----------+------------+--------+----------+--------+
+输出：
++------+
+| name |
++------+
+| Amy  |
+| Mark |
+| Alex |
++------+
+解释：
+根据表 orders 中的订单 '3' 和 '4' ，容易看出只有 'John' 和 'Pam' 两个销售员曾经向公司 'RED' 销售过。
+所以我们需要输出表 salesperson 中所有其他人的名字。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select name
+from salesperson
+where sales_id not in (
+select o.sales_id
+from orders o 
+left join company c
+on o.com_id = c.com_id
+where c.name = 'RED')
+```
+
+## [1440. 计算布尔表达式的值](https://leetcode.cn/problems/evaluate-boolean-expression/)
+
+表 `Variables`:
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| name          | varchar |
+| value         | int     |
++---------------+---------+
+在 SQL 中，name 是该表主键.
+该表包含了存储的变量及其对应的值.
+```
+
+ 
+
+表 `Expressions`:
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| left_operand  | varchar |
+| operator      | enum    |
+| right_operand | varchar |
++---------------+---------+
+在 SQL 中，(left_operand, operator, right_operand) 是该表主键.
+该表包含了需要计算的布尔表达式.
+operator 是枚举类型, 取值于('<', '>', '=')
+left_operand 和 right_operand 的值保证存在于 Variables 表单中.
+```
+
+ 
+
+计算表 `Expressions` 中的布尔表达式。
+
+返回的结果表 **无顺序要求** 。
+
+结果格式如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Variables 表:
++------+-------+
+| name | value |
++------+-------+
+| x    | 66    |
+| y    | 77    |
++------+-------+
+
+Expressions 表:
++--------------+----------+---------------+
+| left_operand | operator | right_operand |
++--------------+----------+---------------+
+| x            | >        | y             |
+| x            | <        | y             |
+| x            | =        | y             |
+| y            | >        | x             |
+| y            | <        | x             |
+| x            | =        | x             |
++--------------+----------+---------------+
+
+输出:
++--------------+----------+---------------+-------+
+| left_operand | operator | right_operand | value |
++--------------+----------+---------------+-------+
+| x            | >        | y             | false |
+| x            | <        | y             | true  |
+| x            | =        | y             | false |
+| y            | >        | x             | true  |
+| y            | <        | x             | false |
+| x            | =        | x             | true  |
++--------------+----------+---------------+-------+
+解释：
+如上所示, 你需要通过使用 Variables 表来找到 Expressions 表中的每一个布尔表达式的值.
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select l.left_operand ,l.operator, l.right_operand, 
+case when l.operator = '>' and to_number(l.left_value) > to_number(v.value) then 'true' 
+when l.operator = '<' and to_number(l.left_value) < to_number(v.value) then 'true' 
+when l.operator = '=' and to_number(l.left_value) = to_number(v.value) then 'true' 
+else 'false' end value
+from 
+(select e.left_operand, e.operator , e.right_operand, v.value left_value
+from expressions e
+left join variables v
+on e.left_operand = v.name) l
+left join variables v
+on l.right_operand = v.name
+```
+
+## [1212. 查询球队积分](https://leetcode.cn/problems/team-scores-in-football-tournament/)
+
+表: `Teams`
+
+```
++---------------+----------+
+| Column Name   | Type     |
++---------------+----------+
+| team_id       | int      |
+| team_name     | varchar  |
++---------------+----------+
+team_id 是该表具有唯一值的列。
+表中的每一行都代表一支独立足球队。
+```
+
+ 
+
+表: `Matches`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| match_id      | int     |
+| host_team     | int     |
+| guest_team    | int     | 
+| host_goals    | int     |
+| guest_goals   | int     |
++---------------+---------+
+match_id 是该表具有唯一值的列。
+表中的每一行都代表一场已结束的比赛。
+比赛的主客队分别由它们自己的 id 表示，他们的进球由 host_goals 和 guest_goals 分别表示。
+```
+
+ 
+
+你希望在所有比赛之后计算所有球队的比分。积分奖励方式如下:
+
+- 如果球队赢了比赛(即比对手进更多的球)，就得 **3** 分。
+- 如果双方打成平手(即，与对方得分相同)，则得 **1** 分。
+- 如果球队输掉了比赛(例如，比对手少进球)，就 **不得分** 。
+
+编写解决方案，以找出每个队的 `team_id`，`team_name` 和 `num_points`。
+
+返回的结果根据 `num_points` **降序排序**，如果有两队积分相同，那么这两队按 `team_id` **升序排序**。
+
+返回结果格式如下。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Teams table:
++-----------+--------------+
+| team_id   | team_name    |
++-----------+--------------+
+| 10        | Leetcode FC  |
+| 20        | NewYork FC   |
+| 30        | Atlanta FC   |
+| 40        | Chicago FC   |
+| 50        | Toronto FC   |
++-----------+--------------+
+Matches table:
++------------+--------------+---------------+-------------+--------------+
+| match_id   | host_team    | guest_team    | host_goals  | guest_goals  |
++------------+--------------+---------------+-------------+--------------+
+| 1          | 10           | 20            | 3           | 0            |
+| 2          | 30           | 10            | 2           | 2            |
+| 3          | 10           | 50            | 5           | 1            |
+| 4          | 20           | 30            | 1           | 0            |
+| 5          | 50           | 30            | 1           | 0            |
++------------+--------------+---------------+-------------+--------------+
+输出：
++------------+--------------+---------------+
+| team_id    | team_name    | num_points    |
++------------+--------------+---------------+
+| 10         | Leetcode FC  | 7             |
+| 20         | NewYork FC   | 3             |
+| 50         | Toronto FC   | 3             |
+| 30         | Atlanta FC   | 1             |
+| 40         | Chicago FC   | 0             |
++------------+--------------+---------------+
+```
+
+
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select t.team_id, t.team_name, nvl(p.num_points,0) num_points
+from teams t
+left join
+(select team_id, sum(points) num_points from
+((select host_team team_id,
+case when host_goals > guest_goals then 3
+when host_goals = guest_goals then 1
+else 0 end as points
+from matches  )
+union all
+(select guest_team team_id,
+case when guest_goals > host_goals then 3
+when guest_goals = host_goals then 1
+else 0 end as points
+from matches))
+group by team_id) p
+on t.team_id = p.team_id
+order by nvl(p.num_points,0) desc, t.team_id asc
+```
+
+
+
+
+
+
+
 # 聚合函数
 
 ## [620. 有趣的电影](https://leetcode.cn/problems/not-boring-movies/)
@@ -2873,7 +3505,563 @@ def gameplay_analysis(activity: pd.DataFrame) -> pd.DataFrame:
     return fraction_df
 ```
 
+## [1890. 2020年最后一次登录](https://leetcode.cn/problems/the-latest-login-in-2020/)
 
+表: `Logins`
+
+```
++----------------+----------+
+| 列名           | 类型      |
++----------------+----------+
+| user_id        | int      |
+| time_stamp     | datetime |
++----------------+----------+
+(user_id, time_stamp) 是这个表的主键(具有唯一值的列的组合)。
+每一行包含的信息是user_id 这个用户的登录时间。
+```
+
+ 
+
+编写解决方案以获取在 `2020` 年登录过的所有用户的本年度 **最后一次** 登录时间。结果集 **不** 包含 `2020` 年没有登录过的用户。
+
+返回的结果集可以按 **任意顺序** 排列。
+
+返回结果格式如下例。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Logins 表:
++---------+---------------------+
+| user_id | time_stamp          |
++---------+---------------------+
+| 6       | 2020-06-30 15:06:07 |
+| 6       | 2021-04-21 14:06:06 |
+| 6       | 2019-03-07 00:18:15 |
+| 8       | 2020-02-01 05:10:53 |
+| 8       | 2020-12-30 00:46:50 |
+| 2       | 2020-01-16 02:49:50 |
+| 2       | 2019-08-25 07:59:08 |
+| 14      | 2019-07-14 09:00:00 |
+| 14      | 2021-01-06 11:59:59 |
++---------+---------------------+
+输出：
++---------+---------------------+
+| user_id | last_stamp          |
++---------+---------------------+
+| 6       | 2020-06-30 15:06:07 |
+| 8       | 2020-12-30 00:46:50 |
+| 2       | 2020-01-16 02:49:50 |
++---------+---------------------+
+解释：
+6号用户登录了3次，但是在2020年仅有一次，所以结果集应包含此次登录。
+8号用户在2020年登录了2次，一次在2月，一次在12月，所以，结果集应该包含12月的这次登录。
+2号用户登录了2次，但是在2020年仅有一次，所以结果集应包含此次登录。
+14号用户在2020年没有登录，所以结果集不应包含。
+```
+
+```sql
+select user_id, max(time_stamp) last_stamp
+from logins
+where user_id in (select user_id from logins where to_char(time_stamp,'yyyy') = '2020') and to_char(time_stamp,'yyyy') = '2020'
+group by user_id
+```
+
+## [511. 游戏玩法分析 I](https://leetcode.cn/problems/game-play-analysis-i/)
+
+活动表 `Activity`：
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| player_id    | int     |
+| device_id    | int     |
+| event_date   | date    |
+| games_played | int     |
++--------------+---------+
+在 SQL 中，表的主键是 (player_id, event_date)。
+这张表展示了一些游戏玩家在游戏平台上的行为活动。
+每行数据记录了一名玩家在退出平台之前，当天使用同一台设备登录平台后打开的游戏的数目（可能是 0 个）。
+```
+
+ 
+
+查询每位玩家 **第一次登录平台的日期**。
+
+查询结果的格式如下所示：
+
+```
+Activity 表：
++-----------+-----------+------------+--------------+
+| player_id | device_id | event_date | games_played |
++-----------+-----------+------------+--------------+
+| 1         | 2         | 2016-03-01 | 5            |
+| 1         | 2         | 2016-05-02 | 6            |
+| 2         | 3         | 2017-06-25 | 1            |
+| 3         | 1         | 2016-03-02 | 0            |
+| 3         | 4         | 2018-07-03 | 5            |
++-----------+-----------+------------+--------------+
+
+Result 表：
++-----------+-------------+
+| player_id | first_login |
++-----------+-------------+
+| 1         | 2016-03-01  |
+| 2         | 2017-06-25  |
+| 3         | 2016-03-02  |
++-----------+-------------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select player_id, to_char(min(event_date),'yyyy-mm-dd') first_login
+from activity
+group by player_id
+```
+
+## [1571. 仓库经理](https://leetcode.cn/problems/warehouse-manager/)
+
+表: `Warehouse`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| name         | varchar |
+| product_id   | int     |
+| units        | int     |
++--------------+---------+
+(name, product_id) 是该表主键(具有唯一值的列的组合).
+该表的行包含了每个仓库的所有商品信息.
+```
+
+ 
+
+表: `Products`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| product_id    | int     |
+| product_name  | varchar |
+| Width         | int     |
+| Length        | int     |
+| Height        | int     |
++---------------+---------+
+product_id 是该表主键(具有唯一值的列).
+该表的行包含了每件商品以英尺为单位的尺寸(宽度, 长度和高度)信息.
+```
+
+ 
+
+编写解决方案报告每个仓库的存货量是多少立方英尺。
+
+返回结果没有顺序要求。
+
+返回结果格式如下例所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Warehouse 表:
++------------+--------------+-------------+
+| name       | product_id   | units       |
++------------+--------------+-------------+
+| LCHouse1   | 1            | 1           |
+| LCHouse1   | 2            | 10          |
+| LCHouse1   | 3            | 5           |
+| LCHouse2   | 1            | 2           |
+| LCHouse2   | 2            | 2           |
+| LCHouse3   | 4            | 1           |
++------------+--------------+-------------+
+Products 表:
++------------+--------------+------------+----------+-----------+
+| product_id | product_name | Width      | Length   | Height    |
++------------+--------------+------------+----------+-----------+
+| 1          | LC-TV        | 5          | 50       | 40        |
+| 2          | LC-KeyChain  | 5          | 5        | 5         |
+| 3          | LC-Phone     | 2          | 10       | 10        |
+| 4          | LC-T-Shirt   | 4          | 10       | 20        |
++------------+--------------+------------+----------+-----------+
+输出：
++----------------+------------+
+| warehouse_name | volume     | 
++----------------+------------+
+| LCHouse1       | 12250      | 
+| LCHouse2       | 20250      |
+| LCHouse3       | 800        |
++----------------+------------+
+解释：
+Id为1的商品(LC-TV)的存货量为 5x50x40 = 10000
+Id为2的商品(LC-KeyChain)的存货量为 5x5x5 = 125 
+Id为3的商品(LC-Phone)的存货量为 2x10x10 = 200
+Id为4的商品(LC-T-Shirt)的存货量为 4x10x20 = 800
+仓库LCHouse1: 1个单位的LC-TV + 10个单位的LC-KeyChain + 5个单位的LC-Phone.
+          总存货量为: 1*10000 + 10*125  + 5*200 = 12250 立方英尺
+仓库LCHouse2: 2个单位的LC-TV + 2个单位的LC-KeyChain.
+          总存货量为: 2*10000 + 2*125 = 20250 立方英尺
+仓库LCHouse3: 1个单位的LC-T-Shirt.
+          总存货量为: 1*800 = 800 立方英尺.
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select w.name warehouse_name, sum(p.width*p.length*p.height*w.units) volume
+from warehouse w
+left join products p
+on w.product_id=p.product_id
+group by w.name
+```
+
+## [586. 订单最多的客户](https://leetcode.cn/problems/customer-placing-the-largest-number-of-orders/)
+
+表: `Orders`
+
+```
++-----------------+----------+
+| Column Name     | Type     |
++-----------------+----------+
+| order_number    | int      |
+| customer_number | int      |
++-----------------+----------+
+在 SQL 中，Order_number是该表的主键。
+此表包含关于订单ID和客户ID的信息。
+```
+
+ 
+
+查找下了 **最多订单** 的客户的 `customer_number` 。
+
+测试用例生成后， **恰好有一个客户** 比任何其他客户下了更多的订单。
+
+查询结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入: 
+Orders 表:
++--------------+-----------------+
+| order_number | customer_number |
++--------------+-----------------+
+| 1            | 1               |
+| 2            | 2               |
+| 3            | 3               |
+| 4            | 3               |
++--------------+-----------------+
+输出: 
++-----------------+
+| customer_number |
++-----------------+
+| 3               |
++-----------------+
+解释: 
+customer_number 为 '3' 的顾客有两个订单，比顾客 '1' 或者 '2' 都要多，因为他们只有一个订单。
+所以结果是该顾客的 customer_number ，也就是 3 。
+```
+
+**进阶：** 如果有多位顾客订单数并列最多，你能找到他们所有的 `customer_number` 吗？
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select customer_number
+from(
+select customer_number
+from orders
+group by customer_number
+order by  count(order_number) desc )
+where rownum = 1
+```
+
+## [1741. 查找每个员工花费的总时间](https://leetcode.cn/problems/find-total-time-spent-by-each-employee/)
+
+表: `Employees`
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| emp_id      | int  |
+| event_day   | date |
+| in_time     | int  |
+| out_time    | int  |
++-------------+------+
+在 SQL 中，(emp_id, event_day, in_time) 是这个表的主键。
+该表显示了员工在办公室的出入情况。
+event_day 是此事件发生的日期，in_time 是员工进入办公室的时间，而 out_time 是他们离开办公室的时间。
+in_time 和 out_time 的取值在1到1440之间。
+题目保证同一天没有两个事件在时间上是相交的，并且保证 in_time 小于 out_time。
+```
+
+ 
+
+计算每位员工每天在办公室花费的总时间（以分钟为单位）。 请注意，在一天之内，同一员工是可以多次进入和离开办公室的。 在办公室里一次进出所花费的时间为out_time 减去 in_time。
+
+返回结果表单的顺序无要求。
+查询结果的格式如下：
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Employees table:
++--------+------------+---------+----------+
+| emp_id | event_day  | in_time | out_time |
++--------+------------+---------+----------+
+| 1      | 2020-11-28 | 4       | 32       |
+| 1      | 2020-11-28 | 55      | 200      |
+| 1      | 2020-12-03 | 1       | 42       |
+| 2      | 2020-11-28 | 3       | 33       |
+| 2      | 2020-12-09 | 47      | 74       |
++--------+------------+---------+----------+
+输出：
++------------+--------+------------+
+| day        | emp_id | total_time |
++------------+--------+------------+
+| 2020-11-28 | 1      | 173        |
+| 2020-11-28 | 2      | 30         |
+| 2020-12-03 | 1      | 41         |
+| 2020-12-09 | 2      | 27         |
++------------+--------+------------+
+解释：
+雇员 1 有三次进出: 有两次发生在 2020-11-28 花费的时间为 (32 - 4) + (200 - 55) = 173, 有一次发生在 2020-12-03 花费的时间为 (42 - 1) = 41。
+雇员 2 有两次进出: 有一次发生在 2020-11-28 花费的时间为 (33 - 3) = 30,  有一次发生在 2020-12-09 花费的时间为 (74 - 47) = 27。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select to_char(event_day,'yyyy-mm-dd') day, emp_id, sum(out_time-in_time) total_time
+from employees
+group by event_day, emp_id
+```
+
+## [1173. 即时食物配送 I](https://leetcode.cn/problems/immediate-food-delivery-i/)
+
+配送表: `Delivery`
+
+```
++-----------------------------+---------+
+| Column Name                 | Type    |
++-----------------------------+---------+
+| delivery_id                 | int     |
+| customer_id                 | int     |
+| order_date                  | date    |
+| customer_pref_delivery_date | date    |
++-----------------------------+---------+
+delivery_id 是表的主键(具有唯一值的列)。
+该表保存着顾客的食物配送信息，顾客在某个日期下了订单，并指定了一个期望的配送日期（和下单日期相同或者在那之后）。
+```
+
+ 
+
+如果顾客期望的配送日期和下单日期相同，则该订单称为 「即时订单」，否则称为「计划订单」。
+
+编写解决方案统计即时订单所占的百分比， **保留两位小数。**
+
+返回结果如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Delivery 表:
++-------------+-------------+------------+-----------------------------+
+| delivery_id | customer_id | order_date | customer_pref_delivery_date |
++-------------+-------------+------------+-----------------------------+
+| 1           | 1           | 2019-08-01 | 2019-08-02                  |
+| 2           | 5           | 2019-08-02 | 2019-08-02                  |
+| 3           | 1           | 2019-08-11 | 2019-08-11                  |
+| 4           | 3           | 2019-08-24 | 2019-08-26                  |
+| 5           | 4           | 2019-08-21 | 2019-08-22                  |
+| 6           | 2           | 2019-08-11 | 2019-08-13                  |
++-------------+-------------+------------+-----------------------------+
+输出：
++----------------------+
+| immediate_percentage |
++----------------------+
+| 33.33                |
++----------------------+
+解释：2 和 3 号订单为即时订单，其他的为计划订单。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select round(sum(immediate_order)/count(delivery_id)*100,2) immediate_percentage
+from (select delivery_id, 
+case when order_date = customer_pref_delivery_date then 1 else 0 end immediate_order
+from delivery)
+
+```
+
+## [1445. 苹果和桔子](https://leetcode.cn/problems/apples-oranges/)
+
+表: `Sales`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| sale_date     | date    |
+| fruit         | enum    | 
+| sold_num      | int     | 
++---------------+---------+
+(sale_date, fruit) 是该表主键(具有唯一值的列的组合)。
+该表包含了每一天中"苹果" 和 "桔子"的销售情况。
+```
+
+ 
+
+编写解决方案报告每一天 **苹果** 和 **桔子** 销售的数目的差异.
+
+返回的结果表, 按照格式为 ('YYYY-MM-DD') 的 `sale_date` 排序.
+
+返回结果表如下例所示:
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Sales 表:
++------------+------------+-------------+
+| sale_date  | fruit      | sold_num    |
++------------+------------+-------------+
+| 2020-05-01 | apples     | 10          |
+| 2020-05-01 | oranges    | 8           |
+| 2020-05-02 | apples     | 15          |
+| 2020-05-02 | oranges    | 15          |
+| 2020-05-03 | apples     | 20          |
+| 2020-05-03 | oranges    | 0           |
+| 2020-05-04 | apples     | 15          |
+| 2020-05-04 | oranges    | 16          |
++------------+------------+-------------+
+输出：
++------------+--------------+
+| sale_date  | diff         |
++------------+--------------+
+| 2020-05-01 | 2            |
+| 2020-05-02 | 0            |
+| 2020-05-03 | 20           |
+| 2020-05-04 | -1           |
++------------+--------------+
+解释：
+在 2020-05-01, 卖了 10 个苹果 和 8 个桔子 (差异为 10 - 8 = 2).
+在 2020-05-02, 卖了 15 个苹果 和 15 个桔子 (差异为 15 - 15 = 0).
+在 2020-05-03, 卖了 20 个苹果 和 0 个桔子 (差异为 20 - 0 = 20).
+在 2020-05-04, 卖了 15 个苹果 和 16 个桔子 (差异为 15 - 16 = -1).
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select to_char(a.sale_date,'yyyy-mm-dd') sale_date, a.apple-o.orange diff
+from
+(select sale_date,sold_num apple
+from
+(select sale_date,fruit,sold_num, rownum rn
+from sales
+order by sale_date, fruit asc)
+where mod(rn,2) = 1)a
+,
+(select sale_date,sold_num orange
+from
+(select sale_date,fruit,sold_num, rownum rn
+from sales
+order by sale_date, fruit asc)
+where mod(rn,2) = 0)o
+where a.SALE_DATE=o.SALE_DATE
+```
+
+## [1699. 两人之间的通话次数](https://leetcode.cn/problems/number-of-calls-between-two-persons/)
+
+表： `Calls`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| from_id     | int     |
+| to_id       | int     |
+| duration    | int     |
++-------------+---------+
+该表没有主键(具有唯一值的列)，它可能包含重复项。
+该表包含 from_id 与 to_id 间的一次电话的时长。
+from_id != to_id
+```
+
+ 
+
+编写解决方案，统计每一对用户 `(person1, person2)` 之间的通话次数和通话总时长，其中 `person1 < person2` 。
+
+以 **任意顺序** 返回结果表。
+
+返回结果格式如下示例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Calls 表：
++---------+-------+----------+
+| from_id | to_id | duration |
++---------+-------+----------+
+| 1       | 2     | 59       |
+| 2       | 1     | 11       |
+| 1       | 3     | 20       |
+| 3       | 4     | 100      |
+| 3       | 4     | 200      |
+| 3       | 4     | 200      |
+| 4       | 3     | 499      |
++---------+-------+----------+
+输出：
++---------+---------+------------+----------------+
+| person1 | person2 | call_count | total_duration |
++---------+---------+------------+----------------+
+| 1       | 2       | 2          | 70             |
+| 1       | 3       | 1          | 20             |
+| 3       | 4       | 4          | 999            |
++---------+---------+------------+----------------+
+解释：
+用户 1 和 2 打过 2 次电话，总时长为 70 (59 + 11)。
+用户 1 和 3 打过 1 次电话，总时长为 20。
+用户 3 和 4 打过 4 次电话，总时长为 999 (100 + 200 + 200 + 499)。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select person1, person2, count(1) call_count, sum(duration) total_duration
+from(
+select
+case when from_id > to_id then to_id else from_id end as person1,
+case when from_id > to_id then from_id else to_id end as person2,
+duration
+from calls
+)
+group by person1, person2
+```
 
 # 排序和分组
 
