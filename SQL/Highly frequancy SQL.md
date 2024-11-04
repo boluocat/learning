@@ -8457,3 +8457,650 @@ from differ
 group by diff order by start_id
 ```
 
+## [1596. 每位顾客最经常订购的商品](https://leetcode.cn/problems/the-most-frequently-ordered-products-for-each-customer/)[1596. 每位顾客最经常订购的商品](https://leetcode.cn/problems/the-most-frequently-ordered-products-for-each-customer/)
+
+表：`Customers`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| customer_id   | int     |
+| name          | varchar |
++---------------+---------+
+customer_id 是该表具有唯一值的列
+该表包含所有顾客的信息
+```
+
+ 
+
+表：`Orders`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| order_id      | int     |
+| order_date    | date    |
+| customer_id   | int     |
+| product_id    | int     |
++---------------+---------+
+order_id 是该表具有唯一值的列
+该表包含顾客 customer_id 的订单信息
+没有顾客会在一天内订购相同的商品 多于一次
+```
+
+ 
+
+表：`Products`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| product_id    | int     |
+| product_name  | varchar |
+| price         | int     |
++---------------+---------+
+product_id 是该表具有唯一值的列
+该表包含了所有商品的信息
+```
+
+ 
+
+写一个解决方案，找到每一个顾客最经常订购的商品。
+
+结果表单应该有每一位至少下过一次单的顾客 `customer_id` , 他最经常订购的商品的 `product_id` 和 `product_name`。
+
+返回结果 **没有顺序要求**。
+
+查询结果格式如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Customers表：
++-------------+-------+
+| customer_id | name  |
++-------------+-------+
+| 1           | Alice |
+| 2           | Bob   |
+| 3           | Tom   |
+| 4           | Jerry |
+| 5           | John  |
++-------------+-------+
+Orders表：
++----------+------------+-------------+------------+
+| order_id | order_date | customer_id | product_id |
++----------+------------+-------------+------------+
+| 1        | 2020-07-31 | 1           | 1          |
+| 2        | 2020-07-30 | 2           | 2          |
+| 3        | 2020-08-29 | 3           | 3          |
+| 4        | 2020-07-29 | 4           | 1          |
+| 5        | 2020-06-10 | 1           | 2          |
+| 6        | 2020-08-01 | 2           | 1          |
+| 7        | 2020-08-01 | 3           | 3          |
+| 8        | 2020-08-03 | 1           | 2          |
+| 9        | 2020-08-07 | 2           | 3          |
+| 10       | 2020-07-15 | 1           | 2          |
++----------+------------+-------------+------------+
+Products表：
++------------+--------------+-------+
+| product_id | product_name | price |
++------------+--------------+-------+
+| 1          | keyboard     | 120   |
+| 2          | mouse        | 80    |
+| 3          | screen       | 600   |
+| 4          | hard disk    | 450   |
++------------+--------------+-------+
+输出：
++-------------+------------+--------------+
+| customer_id | product_id | product_name |
++-------------+------------+--------------+
+| 1           | 2          | mouse        |
+| 2           | 1          | keyboard     |
+| 2           | 2          | mouse        |
+| 2           | 3          | screen       |
+| 3           | 3          | screen       |
+| 4           | 1          | keyboard     |
++-------------+------------+--------------+
+解释：
+Alice (customer 1) 三次订购鼠标, 一次订购键盘, 所以鼠标是 Alice 最经常订购的商品.
+Bob (customer 2) 一次订购键盘, 一次订购鼠标, 一次订购显示器, 所以这些都是 Bob 最经常订购的商品.
+Tom (customer 3) 只两次订购显示器, 所以显示器是 Tom 最经常订购的商品.
+Jerry (customer 4) 只一次订购键盘, 所以键盘是 Jerry 最经常订购的商品.
+John (customer 5) 没有订购过商品, 所以我们并没有把 John 包含在结果表中.
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with ranks as (
+select customer_id, product_id
+from(
+select customer_id, product_id, count(product_id) count_product,
+rank() over (partition by customer_id order by count(product_id) desc) ranks
+from orders
+group by customer_id, product_id)
+where ranks=1)
+
+select r.customer_id, r.product_id, p.product_name
+from ranks r, products p
+where r.product_id=p.product_id
+```
+
+## [1709. 访问日期之间最大的空档期](https://leetcode.cn/problems/biggest-window-between-visits/)
+
+表： `UserVisits`
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| user_id     | int  |
+| visit_date  | date |
++-------------+------+
+该表没有主键，它可能有重复的行
+该表包含用户访问某特定零售商的日期日志。
+```
+
+ 
+
+假设今天的日期是 `'2021-1-1'` 。
+
+编写解决方案，对于每个 `user_id` ，求出每次访问及其下一个访问（若该次访问是最后一次，则为今天）之间最大的空档期天数 `window` 。
+
+返回结果表，按用户编号 `user_id` 排序。
+
+结果格式如下示例所示：
+
+ 
+
+**示例 1：**
+
+```
+输入：
+UserVisits 表：
++---------+------------+
+| user_id | visit_date |
++---------+------------+
+| 1       | 2020-11-28 |
+| 1       | 2020-10-20 |
+| 1       | 2020-12-3  |
+| 2       | 2020-10-5  |
+| 2       | 2020-12-9  |
+| 3       | 2020-11-11 |
++---------+------------+
+输出：
++---------+---------------+
+| user_id | biggest_window|
++---------+---------------+
+| 1       | 39            |
+| 2       | 65            |
+| 3       | 51            |
++---------+---------------+
+解释：
+对于第一个用户，问题中的空档期在以下日期之间：
+    - 2020-10-20 至 2020-11-28 ，共计 39 天。
+    - 2020-11-28 至 2020-12-3 ，共计 5 天。
+    - 2020-12-3 至 2021-1-1 ，共计 29 天。
+由此得出，最大的空档期为 39 天。
+对于第二个用户，问题中的空档期在以下日期之间：
+    - 2020-10-5 至 2020-12-9 ，共计 65 天。
+    - 2020-12-9 至 2021-1-1 ，共计 23 天。
+由此得出，最大的空档期为 65 天。
+对于第三个用户，问题中的唯一空档期在 2020-11-11 至 2021-1-1 之间，共计 51 天。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with window as (
+select user_id, visit_date,
+nvl(lag(visit_date) over (partition by user_id order by visit_date desc),'2021-1-1') lag_date,
+nvl(lag(visit_date) over (partition by user_id order by visit_date desc),'2021-1-1') - visit_date offsets
+from uservisits)
+
+select user_id, max(offsets) biggest_window
+from window
+group by user_id
+```
+
+## [1270. 向公司 CEO 汇报工作的所有人](https://leetcode.cn/problems/all-people-report-to-the-given-manager/)
+
+员工表：`Employees`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| employee_id   | int     |
+| employee_name | varchar |
+| manager_id    | int     |
++---------------+---------+
+employee_id 是这个表具有唯一值的列。
+这个表中每一行中，employee_id 表示职工的 ID，employee_name 表示职工的名字，manager_id 表示该职工汇报工作的直线经理。
+这个公司 CEO 是 employee_id = 1 的人。
+```
+
+ 
+
+编写解决方案，找出所有直接或间接向公司 CEO 汇报工作的职工的 `employee_id` 。
+
+由于公司规模较小，经理之间的间接关系 **不超过 3 个经理** 。
+
+可以以 **任何顺序** 返回无重复项的结果。
+
+返回结果示例如下。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Employees table:
++-------------+---------------+------------+
+| employee_id | employee_name | manager_id |
++-------------+---------------+------------+
+| 1           | Boss          | 1          |
+| 3           | Alice         | 3          |
+| 2           | Bob           | 1          |
+| 4           | Daniel        | 2          |
+| 7           | Luis          | 4          |
+| 8           | Jhon          | 3          |
+| 9           | Angela        | 8          |
+| 77          | Robert        | 1          |
++-------------+---------------+------------+
+输出：
++-------------+
+| employee_id |
++-------------+
+| 2           |
+| 77          |
+| 4           |
+| 7           |
++-------------+
+解释：
+公司 CEO 的 employee_id 是 1.
+employee_id 是 2 和 77 的职员直接汇报给公司 CEO。
+employee_id 是 4 的职员间接汇报给公司 CEO 4 --> 2 --> 1 。
+employee_id 是 7 的职员间接汇报给公司 CEO 7 --> 4 --> 2 --> 1 。
+employee_id 是 3, 8 ，9 的职员不会直接或间接的汇报给公司 CEO。 
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with manager_mapping as (
+select m1.employee_id, m1.manager_id_1, m1.employee_id manager_id_2,e.manager_id manager_id_3
+from(
+select m.employee_id, m.manager_id_1, e.manager_id manager_id_2
+from(
+select employee_id, manager_id manager_id_1
+from employees) m, employees e
+where m.manager_id_1 = e.employee_id)m1, employees e
+where m1.manager_id_2 = e.employee_id)
+
+select employee_id from manager_mapping 
+where employee_id != 1 and (manager_id_1 = 1 or manager_id_2 = 1 or manager_id_3 = 1)
+```
+
+## [1412. 查找成绩处于中游的学生](https://leetcode.cn/problems/find-the-quiet-students-in-all-exams/)
+
+表: `Student`
+
+```
++---------------------+---------+
+| Column Name         | Type    |
++---------------------+---------+
+| student_id          | int     |
+| student_name        | varchar |
++---------------------+---------+
+student_id 是该表主键(具有唯一值的列)。
+student_name 学生名字。
+```
+
+ 
+
+表: `Exam`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| exam_id       | int     |
+| student_id    | int     |
+| score         | int     |
++---------------+---------+
+(exam_id, student_id) 是该表主键(具有唯一值的列的组合)。
+学生 student_id 在测验 exam_id 中得分为 score。
+```
+
+ 
+
+成绩处于中游的学生是指至少参加了一次测验, 且得分既不是最高分也不是最低分的学生。
+
+编写解决方案，找出在 **所有** 测验中都处于中游的学生 `(student_id, student_name)`。不要返回从来没有参加过测验的学生。
+
+返回结果表按照 `student_id` 排序。
+
+返回结果格式如下。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Student 表：
++-------------+---------------+
+| student_id  | student_name  |
++-------------+---------------+
+| 1           | Daniel        |
+| 2           | Jade          |
+| 3           | Stella        |
+| 4           | Jonathan      |
+| 5           | Will          |
++-------------+---------------+
+Exam 表：
++------------+--------------+-----------+
+| exam_id    | student_id   | score     |
++------------+--------------+-----------+
+| 10         |     1        |    70     |
+| 10         |     2        |    80     |
+| 10         |     3        |    90     |
+| 20         |     1        |    80     |
+| 30         |     1        |    70     |
+| 30         |     3        |    80     |
+| 30         |     4        |    90     |
+| 40         |     1        |    60     |
+| 40         |     2        |    70     |
+| 40         |     4        |    80     |
++------------+--------------+-----------+
+输出：
++-------------+---------------+
+| student_id  | student_name  |
++-------------+---------------+
+| 2           | Jade          |
++-------------+---------------+
+解释：
+对于测验 1: 学生 1 和 3 分别获得了最低分和最高分。
+对于测验 2: 学生 1 既获得了最高分, 也获得了最低分。
+对于测验 3 和 4: 学生 1 和 4 分别获得了最低分和最高分。
+学生 2 和 5 没有在任一场测验中获得了最高分或者最低分。
+因为学生 5 从来没有参加过任何测验, 所以他被排除于结果表。
+由此, 我们仅仅返回学生 2 的信息。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with middle_student_id as(
+select e.student_id, e.exam_id, e.score, m.max_score, m.min_score,
+case when e.score < m.max_score and e.score > m.min_score then 1 else 0 end as student_type
+from exam e, 
+(select exam_id, max(score) max_score, min(score) min_score
+from exam
+group by exam_id ) m
+where e.exam_id=m.exam_id) 
+
+select m.student_id, s.student_name
+from middle_student_id m, student s
+where m.student_id=s.student_id
+group by m.student_id, s.student_name
+having avg(m.student_type) = 1
+order by m.student_id
+```
+
+## [1767. 寻找没有被执行的任务对](https://leetcode.cn/problems/find-the-subtasks-that-did-not-execute/)
+
+表：`Tasks`
+
+```
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| task_id        | int     |
+| subtasks_count | int     |
++----------------+---------+
+task_id 具有唯一值的列。
+task_id 表示的为主任务的id,每一个task_id被分为了多个子任务(subtasks)，subtasks_count表示为子任务的个数（n），它的值表示了子任务的索引从1到n。
+本表保证2 <=subtasks_count<= 20。
+```
+
+ 
+
+表： `Executed`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| task_id       | int     |
+| subtask_id    | int     |
++---------------+---------+
+(task_id, subtask_id) 是该表中具有唯一值的列的组合。
+每一行表示标记为task_id的主任务与标记为subtask_id的子任务被成功执行。
+本表 保证 ，对于每一个task_id，subtask_id <= subtasks_count。
+```
+
+ 
+
+编写解决方案报告没有被执行的（主任务，子任务）对，即没有被执行的（task_id, subtask_id）。
+
+以 **任何顺序** 返回即可。
+
+查询结果格式如下。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Tasks 表:
++---------+----------------+
+| task_id | subtasks_count |
++---------+----------------+
+| 1       | 3              |
+| 2       | 2              |
+| 3       | 4              |
++---------+----------------+
+Executed 表:
++---------+------------+
+| task_id | subtask_id |
++---------+------------+
+| 1       | 2          |
+| 3       | 1          |
+| 3       | 2          |
+| 3       | 3          |
+| 3       | 4          |
++---------+------------+
+输出：
++---------+------------+
+| task_id | subtask_id |
++---------+------------+
+| 1       | 1          |
+| 1       | 3          |
+| 2       | 1          |
+| 2       | 2          |
++---------+------------+
+解释：
+Task 1 被分成了 3 subtasks (1, 2, 3)。只有 subtask 2 被成功执行, 所以我们返回 (1, 1) 和 (1, 3) 这两个主任务子任务对。
+Task 2 被分成了 2 subtasks (1, 2)。没有一个subtask被成功执行, 因此我们返回(2, 1)和(2, 2)。
+Task 3 被分成了 4 subtasks (1, 2, 3, 4)。所有的subtask都被成功执行，因此对于Task 3,我们不返回任何值。
+```
+
+### `start with... connect by ...`
+
+用于查询存在父子关系的数据，相当于树形结构的数据
+
+```SQL
+SELECT * FROM TABLE NAME
+WHERE CONDITION3
+START WITH CONDITION1
+CONNECT BY CONDITION2
+```
+
+- start with [condition]：设置起点，用来限制第一层的数据，或者叫根节点数据；以这部分数据为基础来查找第二层数据，然后以第二层数据查找第三层数据以此类推。省略后默认以全部行为起点。
+- connect by [condition] ：用来指明在查找数据时以怎样的一种关系去查找；比如说查找第二层的数据时用第一层数据某个字段进行匹配，如果这个条件成立那么查找出来的数据就是第二层数据，同理往下递归匹配。
+- prior ： 表示上一层级的标识符。经常用来对下一层级的数据进行限制。不可以接伪列。PRIOR在等号前面和后面，查询的数据是不一样的。**等号前面代表向下递归，等号后面代表向上递归。**
+- level ：伪列（关键字），代表树形结构中的层级编号（数字序列结果集），这个必须配合connect by 使用，和rownum是同等效果。
+- connect_by_root() ：显示根节点列。经常用来分组。
+- connect_by_isleaf ：1是叶子节点，0不是叶子节点。在制作树状表格时必用关键字。
+- sys_connect_by_path() ：将递归过程中的列进行拼接。
+- nocycle , connect_by_iscycle : 在有循环结构的查询中使用。
+- siblings : 保留树状结构，对兄弟节点进行排序
+
+| PARENT | CHILD | FLAG |
+| ------ | ----- | ---- |
+|        | 18    | Y    |
+| 18     | 7     | Y    |
+| 7      | 4     | Y    |
+| 4      | 2     | Y    |
+| 18     | 11    | Y    |
+|        | 26    | Y    |
+| 26     | 1     | Y    |
+| 26     | 12    | Y    |
+| 26     | 13    | Y    |
+|        | 38    | Y    |
+| 38     | 6     | Y    |
+| 38     | 15    | Y    |
+| 15     | 5     | Y    |
+| 5      | 3     | Y    |
+| 5      | 4     | Y    |
+| 4      | 2     | Y    |
+| 15     | 10    | Y    |
+| 38     | 17    | Y    |
+| 17     | 8     | Y    |
+
+Case 1: 向下递归
+
+```SQL
+select * from tabs a
+start with a.parent is null
+connect by prior a.child = a.parent;
+```
+
+1. `start with a.parent is null`
+
+   | PARENT | CHILD | FLAG |
+   | ------ | ----- | ---- |
+   |        | 18    | Y    |
+   |        | 26    | Y    |
+   |        | 38    | Y    |
+
+2. `connect by prior a.child = a.parent;`  prior在等号前面，向下递归
+
+   | PARENT | CHILD | FLAG |
+   | ------ | ----- | ---- |
+   |        | 18    | Y    |
+   | 18     | 7     | Y    |
+   | 18     | 11    | Y    |
+   |        | 26    | Y    |
+   | 26     | 1     | Y    |
+   | 26     | 12    | Y    |
+   | 26     | 13    | Y    |
+   |        | 38    | Y    |
+   | 38     | 6     | Y    |
+   | 38     | 15    | Y    |
+   | 15     | 5     | Y    |
+   | 5      | 3     | Y    |
+   | 5      | 4     | Y    |
+   | 4      | 2     | Y    |
+   | 4      | 2     | Y    |
+   | 38     | 17    | Y    |
+   | 17     | 8     | Y    |
+   | 17     | 9     | Y    |
+
+   Case 2: 向下递归
+
+```sql
+select * from tabs a
+where a.parent = '5'
+start with a.parent = '15'
+connect by prior a.child = a.parent;
+```
+
+1. `start with a.parent = '15'`
+
+   | PARENT | CHILD | FLAG |
+   | ------ | ----- | ---- |
+   | 15     | 5     | Y    |
+   | 15     | 10    | Y    |
+
+2. `connect by prior a.child = a.parent` 向下递归
+
+   | PARENT | CHILD | FLAG |
+   | ------ | ----- | ---- |
+   | 15     | 5     | Y    |
+   | 5      | 3     | Y    |
+   | 5      | 4     | Y    |
+   | 4      | 2     | Y    |
+   | 4      | 2     | Y    |
+   | 15     | 10    | Y    |
+
+3. `where a.parent = '5'`
+
+   | PARENT | CHILD | FLAG |
+   | ------ | ----- | ---- |
+   | 5      | 3     | Y    |
+   | 5      | 4     | Y    |
+
+Case 3: 向上递归
+
+```sql
+select * from tabs a
+start with a.parent='15'
+connect by a.child= prior a.parent
+```
+
+| PARENT | CHILD | FLAG |
+| ------ | ----- | ---- |
+| 15     | 5     | Y    |
+| 38     | 15    | Y    |
+|        | 38    | Y    |
+| 15     | 10    | Y    |
+| 38     | 15    | Y    |
+|        | 38    | Y    |
+
+Case4:
+
+```sql
+SELECT A.PARENT 
+      ,A.CHILD 
+      ,LEVEL "层次"  
+      ,SYS_CONNECT_BY_PATH(CHILD, '<-') "合并层次"  
+      ,PRIOR A.CHILD "父节点"  
+      ,CONNECT_BY_ROOT A.CHILD "根节点"  
+      ,DECODE(CONNECT_BY_ISLEAF, 1, A.CHILD, NULL) "子节点"  
+      ,DECODE(CONNECT_BY_ISLEAF, 1, '是', '否') "是否子节点"  
+  FROM TAB_CONNECT_BY A  
+ START WITH A.PARENT IS NULL --从PARENT为空开始扫描  
+CONNECT BY PRIOR A.CHILD = A.PARENT --以CHILD为父列连接PARENT  
+ ORDER SIBLINGS BY CHILD DESC --对层次排序  
+```
+
+![img](https://img2022.cnblogs.com/blog/941360/202204/941360-20220422170507061-585857143.png)
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with task_subtask_mapping as(
+    select t.task_id , a.sub_id
+    from tasks t, (select rownum sub_id from dual connect by rownum<=20) a
+    where a.sub_id <= t.subtasks_count
+    order by t.task_id, a.sub_id asc
+)
+
+select t.task_id, t.sub_id subtask_id
+from  task_subtask_mapping t
+left join executed e
+on t.task_id = e.task_id and t.sub_id = e.subtask_id
+where e.subtask_id is null
+```
+
