@@ -9104,3 +9104,102 @@ on t.task_id = e.task_id and t.sub_id = e.subtask_id
 where e.subtask_id is null
 ```
 
+## [1225. 报告系统状态的连续日期](https://leetcode.cn/problems/report-contiguous-dates/)
+
+表：`Failed`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| fail_date    | date    |
++--------------+---------+
+该表主键为 fail_date (具有唯一值的列)。
+该表包含失败任务的天数.
+```
+
+ 
+
+表： `Succeeded`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| success_date | date    |
++--------------+---------+
+该表主键为 success_date (具有唯一值的列)。
+该表包含成功任务的天数.
+```
+
+ 
+
+系统 **每天** 运行一个任务。每个任务都独立于先前的任务。任务的状态可以是失败或是成功。
+
+编写解决方案找出 **2019-01-01** 到 **2019-12-31** 期间任务连续同状态 `period_state` 的起止日期（`start_date` 和 `end_date`）。即如果任务失败了，就是失败状态的起止日期，如果任务成功了，就是成功状态的起止日期。
+
+最后结果按照起始日期 `start_date` 排序
+
+返回结果样例如下所示:
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Failed table:
++-------------------+
+| fail_date         |
++-------------------+
+| 2018-12-28        |
+| 2018-12-29        |
+| 2019-01-04        |
+| 2019-01-05        |
++-------------------+
+Succeeded table:
++-------------------+
+| success_date      |
++-------------------+
+| 2018-12-30        |
+| 2018-12-31        |
+| 2019-01-01        |
+| 2019-01-02        |
+| 2019-01-03        |
+| 2019-01-06        |
++-------------------+
+输出：
++--------------+--------------+--------------+
+| period_state | start_date   | end_date     |
++--------------+--------------+--------------+
+| succeeded    | 2019-01-01   | 2019-01-03   |
+| failed       | 2019-01-04   | 2019-01-05   |
+| succeeded    | 2019-01-06   | 2019-01-06   |
++--------------+--------------+--------------+
+解释：
+结果忽略了 2018 年的记录，因为我们只关心从 2019-01-01 到 2019-12-31 的记录
+从 2019-01-01 到 2019-01-03 所有任务成功，系统状态为 "succeeded"。
+从 2019-01-04 到 2019-01-05 所有任务失败，系统状态为 "failed"。
+从 2019-01-06 到 2019-01-06 所有任务成功，系统状态为 "succeeded"。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with task_states as(
+select fail_date dates, 'failed' states
+from failed
+where fail_date >= '2019-01-01' and fail_date <= '2019-12-31'
+union all
+select success_date dates, 'succeeded' states
+from succeeded
+where success_date >= '2019-01-01' and success_date <= '2019-12-31')
+
+select states period_state,
+to_char(min(dates),'yyyy-mm-dd') start_date,
+to_char(max(dates),'yyyy-mm-dd') end_date
+from(select dates, states, dates - row_number() over (partition by states order by dates asc) rn from task_states)
+group by rn, states
+order by min(dates) asc
+```
+
