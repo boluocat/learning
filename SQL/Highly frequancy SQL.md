@@ -9588,3 +9588,175 @@ and request_at >= '2013-10-01' and request_at  <= '2013-10-03'
 group by request_at
 ```
 
+## [569. 员工薪水中位数](https://leetcode.cn/problems/median-employee-salary/)
+
+表: `Employee`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| id           | int     |
+| company      | varchar |
+| salary       | int     |
++--------------+---------+
+id 是该表的主键列(具有唯一值的列)。
+该表的每一行表示公司和一名员工的工资。
+```
+
+ 
+
+编写解决方案，找出每个公司的工资中位数。
+
+以 **任意顺序** 返回结果表。
+
+查询结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入: 
+Employee 表:
++----+---------+--------+
+| id | company | salary |
++----+---------+--------+
+| 1  | A       | 2341   |
+| 2  | A       | 341    |
+| 3  | A       | 15     |
+| 4  | A       | 15314  |
+| 5  | A       | 451    |
+| 6  | A       | 513    |
+| 7  | B       | 15     |
+| 8  | B       | 13     |
+| 9  | B       | 1154   |
+| 10 | B       | 1345   |
+| 11 | B       | 1221   |
+| 12 | B       | 234    |
+| 13 | C       | 2345   |
+| 14 | C       | 2645   |
+| 15 | C       | 2645   |
+| 16 | C       | 2652   |
+| 17 | C       | 65     |
++----+---------+--------+
+输出: 
++----+---------+--------+
+| id | company | salary |
++----+---------+--------+
+| 5  | A       | 451    |
+| 6  | A       | 513    |
+| 12 | B       | 234    |
+| 9  | B       | 1154   |
+| 14 | C       | 2645   |
++----+---------+--------+
+```
+
+ 
+
+**进阶:** 你能在不使用任何内置函数或窗口函数的情况下解决它吗?
+
+```sql
+SELECT id, company, salary
+FROM
+(
+    SELECT id, company, salary,
+    ROW_NUMBER() OVER (PARTITION BY company ORDER BY Salary ASC, id ASC) AS row_num,
+    COUNT(Id) OVER (PARTITION BY company) AS count_id
+    FROM Employee
+)
+WHERE row_num IN (FLOOR((count_id + 1)/2), FLOOR((count_id + 2)/2))
+
+```
+
+## [574. 当选者](https://leetcode.cn/problems/winning-candidate/)
+
+表: `Candidate`
+
+```
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| id          | int      |
+| name        | varchar  |
++-------------+----------+
+id 是该表中具有唯一值的列
+该表的每一行都包含关于候选对象的id和名称的信息。
+```
+
+ 
+
+表: `Vote`
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| candidateId | int  |
++-------------+------+
+id 是自动递增的主键(具有唯一值的列)。
+candidateId是id来自Candidate表的外键(reference 列)。
+该表的每一行决定了在选举中获得第i张选票的候选人。
+```
+
+ 
+
+编写解决方案来报告获胜候选人的名字(即获得最多选票的候选人)。
+
+生成的测试用例保证 **只有一个候选人赢得** 选举。
+
+返回结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入: 
+Candidate table:
++----+------+
+| id | name |
++----+------+
+| 1  | A    |
+| 2  | B    |
+| 3  | C    |
+| 4  | D    |
+| 5  | E    |
++----+------+
+Vote table:
++----+-------------+
+| id | candidateId |
++----+-------------+
+| 1  | 2           |
+| 2  | 4           |
+| 3  | 3           |
+| 4  | 2           |
+| 5  | 5           |
++----+-------------+
+输出: 
++------+
+| name |
++------+
+| B    |
++------+
+解释: 
+候选人B有2票。候选人C、D、E各有1票。
+获胜者是候选人B。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select c.name
+from(
+select candidateId,
+rank() over (order by count(candidateId) desc) count_candidate
+from vote
+group by candidateId
+) v
+left join candidate c
+on v.candidateId = c.id
+where v.count_candidate=1
+```
+
