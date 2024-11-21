@@ -127,7 +127,34 @@ car.update({"Color": "blue", "Year": 2018})
 # Output: {"Brand": "Ford","Model": "Mustang","Color": "blue","Year" : 2018}
 ```
 
+sort a dictionary by key
+
+```python
+a = {'h':3, 'b':7, 'a':9,'o':10}
+sorted_a = {k:a[k] for k in sorted(a)}
+# {'a': 9, 'b': 7, 'h': 3, 'o': 10}
+
+>>> print({x[0]:x[1] for x in sorted(a.items(), key= lambda kv:(kv[0], kv[1]))}) 
+# {'a': 9, 'b': 7, 'h': 3, 'o': 10}
+
+>>> print(sorted(a.items(), key= lambda kv:(kv[0], kv[1]))) 
+# [('a', 9), ('b', 7), ('h', 3), ('o', 10)]
+```
+
+sort a dictionary by value
+
+```python
+{x[0]:x[1] for x in sorted(a.items(), key= lambda kv:(kv[1], kv[0]))}
+# {'h': 3, 'b': 7, 'a': 9, 'o': 10}
+
+>>> print(sorted(a.items(), key= lambda kv:(kv[1], kv[0])))
+# [('h', 3), ('b', 7), ('a', 9), ('o', 10)]
+```
+
+
+
 ## List
+
 Here is the generic syntax and structure of a list comprehension:
 `<variable> = [<expression> for <item> in <iterable>]`
 1. <variable>: the variable that will store the newly created list
@@ -151,11 +178,11 @@ group = [x for x in user if x[0] == "B"]
 ```
 
 ## Difference of List, Tuple, Set
-| | Mutable| Ordered | Indexing | Duplicates|
-|-----|-----|-----|-----|-----|
-|List | Y | Y | Y | Y |
-|Tuple | F | Y | Y | Y |
-|Set | Y | F | F | F|
+|       | Mutable | Ordered | Indexing | Duplicates |
+| ----- | ------- | ------- | -------- | ---------- |
+| List  | Y       | Y       | Y        | Y          |
+| Tuple | F       | Y       | Y        | Y          |
+| Set   | Y       | F       | F        | F          |
 
 
 
@@ -278,7 +305,7 @@ info("Hallelujah", song_name)
 Song name: Hallelujah
 ```
 
-In Python, functions can ne nested. This means you can define a function inside another functions's body.
+In Python, functions can be nested. This means you can define a function inside another functions's body.
 ```python
 # outer function
 def outer_function():
