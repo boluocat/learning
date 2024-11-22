@@ -9760,3 +9760,384 @@ on v.candidateId = c.id
 where v.count_candidate=1
 ```
 
+## [578. 查询回答率最高的问题](https://leetcode.cn/problems/get-highest-answer-rate-question/)
+
+`SurveyLog` 表：
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| action      | ENUM |
+| question_id | int  |
+| answer_id   | int  |
+| q_num       | int  |
+| timestamp   | int  |
++-------------+------+
+这张表可能包含重复项。
+action 是一个 ENUM(category) 数据，可以是 "show"、"answer" 或者 "skip" 。
+这张表的每一行表示：ID = id 的用户对 question_id 的问题在 timestamp 时间进行了 action 操作。
+如果用户对应的操作是 "answer" ，answer_id 将会是对应答案的 id ，否则，值为 null 。
+q_num 是该问题在当前会话中的数字顺序。
+```
+
+ 
+
+**回答率** 是指：同一问题编号中回答次数占显示次数的比率。
+
+编写一个解决方案以报告 **回答率** 最高的问题。如果有多个问题具有相同的最大 **回答率** ，返回 `question_id` 最小的那个。
+
+查询结果如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+SurveyLog table:
++----+--------+-------------+-----------+-------+-----------+
+| id | action | question_id | answer_id | q_num | timestamp |
++----+--------+-------------+-----------+-------+-----------+
+| 5  | show   | 285         | null      | 1     | 123       |
+| 5  | answer | 285         | 124124    | 1     | 124       |
+| 5  | show   | 369         | null      | 2     | 125       |
+| 5  | skip   | 369         | null      | 2     | 126       |
++----+--------+-------------+-----------+-------+-----------+
+输出：
++------------+
+| survey_log |
++------------+
+| 285        |
++------------+
+解释：
+问题 285 显示 1 次、回答 1 次。回答率为 1.0 。
+问题 369 显示 1 次、回答 0 次。回答率为 0.0 。
+问题 285 回答率最高。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select question_id survey_log 
+from(
+    select question_id, sum(if_answer)
+    from(
+        select question_id,
+        case when answer_id is not null then 1 else 0 end if_answer
+        from surveylog)
+    group by question_id
+    order by sum(if_answer) desc, question_id asc)
+where rownum=1
+```
+
+## [580. 统计各专业学生人数](https://leetcode.cn/problems/count-student-number-in-departments/)
+
+表: `Student`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| student_id   | int     |
+| student_name | varchar |
+| gender       | varchar |
+| dept_id      | int     |
++--------------+---------+
+student_id 是该表的主键（具有唯一值的列）。
+dept_id是Department表中dept_id的外键。
+该表的每一行都表示学生的姓名、性别和所属系的id。
+```
+
+ 
+
+表: `Department`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| dept_id     | int     |
+| dept_name   | varchar |
++-------------+---------+
+dept_id是该表的主键（具有唯一值的列）。
+该表的每一行包含一个部门的id和名称。
+```
+
+ 
+
+编写解决方案，为 `Department` 表中的所有部门(甚至是没有当前学生的部门)报告各自的部门名称和每个部门的学生人数。
+
+按 `student_number` **降序** 返回结果表。如果是平局，则按 `dept_name` 的 **字母顺序** 排序。
+
+结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入: 
+Student 表:
++------------+--------------+--------+---------+
+| student_id | student_name | gender | dept_id |
++------------+--------------+--------+---------+
+| 1          | Jack         | M      | 1       |
+| 2          | Jane         | F      | 1       |
+| 3          | Mark         | M      | 2       |
++------------+--------------+--------+---------+
+Department 表:
++---------+-------------+
+| dept_id | dept_name   |
++---------+-------------+
+| 1       | Engineering |
+| 2       | Science     |
+| 3       | Law         |
++---------+-------------+
+输出: 
++-------------+----------------+
+| dept_name   | student_number |
++-------------+----------------+
+| Engineering | 2              |
+| Science     | 1              |
+| Law         | 0              |
++-------------+----------------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select d.dept_name, count(s.student_id) student_number
+from department d
+left join student s
+on d.dept_id=s.dept_id
+group by d.dept_name
+order by count(s.student_id) desc, dept_name asc
+```
+
+## [597. 好友申请 I：总体通过率](https://leetcode.cn/problems/friend-requests-i-overall-acceptance-rate/)
+
+表：`FriendRequest`
+
+```
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| sender_id      | int     |
+| send_to_id     | int     |
+| request_date   | date    |
++----------------+---------+
+该表可能包含重复项（换句话说，在SQL中，该表没有主键）。
+该表包含发送请求的用户的 ID ，接受请求的用户的 ID 以及请求的日期。
+```
+
+ 
+
+表：`RequestAccepted`
+
+```
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| requester_id   | int     |
+| accepter_id    | int     |
+| accept_date    | date    |
++----------------+---------+
+该表可能包含重复项（换句话说，在SQL中，该表没有主键）。
+该表包含发送请求的用户的 ID ，接受请求的用户的 ID 以及请求通过的日期。
+```
+
+ 
+
+求出好友申请的通过率，用 2 位小数表示。通过率由接受好友申请的数目除以申请总数。
+
+**提示：**
+
+- 通过的好友申请不一定都在表 `friend_request` 中。你只需要统计总的被通过的申请数（不管它们在不在表 `FriendRequest` 中），并将它除以申请总数，得到通过率
+- 一个好友申请发送者有可能会给接受者发几条好友申请，也有可能一个好友申请会被通过好几次。这种情况下，重复的好友申请只统计一次。
+- 如果一个好友申请都没有，你应该返回 `accept_rate` 为 0.00 。
+
+返回结果应该如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+FriendRequest 表：
++-----------+------------+--------------+
+| sender_id | send_to_id | request_date |
++-----------+------------+--------------+
+| 1         | 2          | 2016/06/01   |
+| 1         | 3          | 2016/06/01   |
+| 1         | 4          | 2016/06/01   |
+| 2         | 3          | 2016/06/02   |
+| 3         | 4          | 2016/06/09   |
++-----------+------------+--------------+
+RequestAccepted 表：
++--------------+-------------+-------------+
+| requester_id | accepter_id | accept_date |
++--------------+-------------+-------------+
+| 1            | 2           | 2016/06/03  |
+| 1            | 3           | 2016/06/08  |
+| 2            | 3           | 2016/06/08  |
+| 3            | 4           | 2016/06/09  |
+| 3            | 4           | 2016/06/10  |
++--------------+-------------+-------------+
+输出：
++-------------+
+| accept_rate |
++-------------+
+| 0.8         |
++-------------+
+解释：
+总共有 5 个请求，有 4 个不同的通过请求，所以通过率是 0.80
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select case when r.requet_num != 0 then round(a.accept_num/r.requet_num,2) else 0.00 end accept_rate
+from (select count(distinct(requester_id||accepter_id)) accept_num from requestaccepted) a, (select count(distinct(sender_id||send_to_id)) requet_num from friendrequest) r
+```
+
+## [614. 二级关注者](https://leetcode.cn/problems/second-degree-follower/)
+
+表：`Follow`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| followee    | varchar |
+| follower    | varchar |
++-------------+---------+
+(followee, follower) 是该表的主键(具有唯一值的列的组合)。
+该表的每一行表示关注者关注了社交网络上的被关注者。
+不会有用户关注他们自己。
+```
+
+ 
+
+**二级关注者** 是指满足以下条件的用户:
+
+- 关注至少一个用户，
+- 被至少一个用户关注。
+
+编写一个解决方案来报告 **二级用户** 及其关注者的数量。
+
+返回按 `follower` **字典序排序** 的结果表。
+
+结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Follow table:
++----------+----------+
+| followee | follower |
++----------+----------+
+| Alice    | Bob      |
+| Bob      | Cena     |
+| Bob      | Donald   |
+| Donald   | Edward   |
++----------+----------+
+输出：
++----------+-----+
+| follower | num |
++----------+-----+
+| Bob      | 2   |
+| Donald   | 1   |
++----------+-----+
+解释：
+用户 Bob 有 2 个关注者。Bob 是二级关注者，因为他关注了 Alice，所以我们把他包括在结果表中。
+用户 Donald 有 1 个关注者。Donald 是二级关注者，因为他关注了 Bob，所以我们把他包括在结果表中。
+用户 Alice 有 1 个关注者。Alice 不是二级关注者，但是她不关注任何人，所以我们不把她包括在结果表中。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+
+select followee follower, count(follower) num
+from follow
+where followee in (select distinct(followee) from follow) and followee in (select distinct(follower) from follow)
+group by followee
+order by followee asc
+```
+
+## [627. 变更性别](https://leetcode.cn/problems/swap-salary/)
+
+
+
+`Salary` 表：
+
+```
++-------------+----------+
+| Column Name | Type     |
++-------------+----------+
+| id          | int      |
+| name        | varchar  |
+| sex         | ENUM     |
+| salary      | int      |
++-------------+----------+
+id 是这个表的主键（具有唯一值的列）。
+sex 这一列的值是 ENUM 类型，只能从 ('m', 'f') 中取。
+本表包含公司雇员的信息。
+```
+
+ 
+
+请你编写一个解决方案来交换所有的 `'f'` 和 `'m'` （即，将所有 `'f'` 变为 `'m'` ，反之亦然），仅使用 **单个 update 语句** ，且不产生中间临时表。
+
+注意，你必须仅使用一条 update 语句，且 **不能** 使用 select 语句。
+
+结果如下例所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Salary 表：
++----+------+-----+--------+
+| id | name | sex | salary |
++----+------+-----+--------+
+| 1  | A    | m   | 2500   |
+| 2  | B    | f   | 1500   |
+| 3  | C    | m   | 5500   |
+| 4  | D    | f   | 500    |
++----+------+-----+--------+
+输出：
++----+------+-----+--------+
+| id | name | sex | salary |
++----+------+-----+--------+
+| 1  | A    | f   | 2500   |
+| 2  | B    | m   | 1500   |
+| 3  | C    | f   | 5500   |
+| 4  | D    | m   | 500    |
++----+------+-----+--------+
+解释：
+(1, A) 和 (3, C) 从 'm' 变为 'f' 。
+(2, B) 和 (4, D) 从 'f' 变为 'm' 。
+```
+
+### replace()
+
+`REPLACE(string_expression, string_pattern [, string_replacement])`
+
+1. 设置需要替换的字符对象为'fm'或‘mf'
+2. 在'fm'或‘mf'查找sex实际的值
+3. 将sex实际的值替换为空字符
+4. 最后将替换后的值赋值给 sex
+
+```sql
+update salary set sex = replace('fm', sex, '')
+```
+
