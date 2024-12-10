@@ -10141,3 +10141,1079 @@ Salary 表：
 update salary set sex = replace('fm', sex, '')
 ```
 
+## [612. 平面上的最近距离](https://leetcode.cn/problems/shortest-distance-in-a-plane/)
+
+`Point2D` 表：
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| x           | int  |
+| y           | int  |
++-------------+------+
+(x, y) 是该表的主键列(具有唯一值的列的组合)。
+这张表的每一行表示 X-Y 平面上一个点的位置
+```
+
+ 
+
+`p1(x1, y1)` 和 `p2(x2, y2)` 这两点之间的距离是 `sqrt((x2 - x1)2 + (y2 - y1)2)` 。
+
+编写解决方案，报告 `Point2D` 表中任意两点之间的最短距离。保留 **2 位小数** 。
+
+返回结果格式如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Point2D table:
++----+----+
+| x  | y  |
++----+----+
+| -1 | -1 |
+| 0  | 0  |
+| -1 | -2 |
++----+----+
+输出：
++----------+
+| shortest |
++----------+
+| 1.00     |
++----------+
+解释：最短距离是 1.00 ，从点 (-1, -1) 到点 (-1, 2) 。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select round(min(sqrt(power((a.x-b.x),2) + power((a.y-b.y),2))),2) shortest
+from point2d a, point2d b
+where a.x != b.x or a.y != b.y
+```
+
+## [1069. 产品销售分析 II](https://leetcode.cn/problems/product-sales-analysis-ii/)
+
+销售表：`Sales`
+
+```
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| year        | int   |
+| quantity    | int   |
+| price       | int   |
++-------------+-------+
+sale_id 是这个表的主键（具有唯一值的列）。
+product_id 是 Product 表的外键（reference 列）。
+该表的每一行显示产品product_id在某一年的销售情况。
+请注意价格是每单位的。
+```
+
+产品表：`Product`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
++--------------+---------+
+product_id 是这个表的主键（具有唯一值的列）。
+该表的每一行表示每种产品的产品名称。
+```
+
+ 
+
+编写解决方案，统计每个产品的销售总量。
+
+返回结果表 **无顺序要求** 。
+
+结果格式如下例子所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Sales 表：
++---------+------------+------+----------+-------+
+| sale_id | product_id | year | quantity | price |
++---------+------------+------+----------+-------+ 
+| 1       | 100        | 2008 | 10       | 5000  |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
++---------+------------+------+----------+-------+
+Product 表：
++------------+--------------+
+| product_id | product_name |
++------------+--------------+
+| 100        | Nokia        |
+| 200        | Apple        |
+| 300        | Samsung      |
++------------+--------------+
+输出：
++--------------+----------------+
+| product_id   | total_quantity |
++--------------+----------------+
+| 100          | 22             |
+| 200          | 15             |
++--------------+----------------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select p.product_id, sum(s.quantity) total_quantity
+from product p, sales s
+where p.product_id=s.product_id
+group by p.product_id
+```
+
+## [1070. 产品销售分析 III](https://leetcode.cn/problems/product-sales-analysis-iii/)
+
+销售表 `Sales`：
+
+```
++-------------+-------+
+| Column Name | Type  |
++-------------+-------+
+| sale_id     | int   |
+| product_id  | int   |
+| year        | int   |
+| quantity    | int   |
+| price       | int   |
++-------------+-------+
+(sale_id, year) 是这张表的主键（具有唯一值的列的组合）。
+product_id 是产品表的外键（reference 列）。
+这张表的每一行都表示：编号 product_id 的产品在某一年的销售额。
+请注意，价格是按每单位计的。
+```
+
+ 
+
+产品表 `Product`：
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
++--------------+---------+
+product_id 是这张表的主键（具有唯一值的列）。
+这张表的每一行都标识：每个产品的 id 和 产品名称。
+```
+
+ 
+
+编写解决方案，选出每个售出过的产品 **第一年** 销售的 **产品 id**、**年份**、**数量** 和 **价格**。
+
+结果表中的条目可以按 **任意顺序** 排列。
+
+结果格式如下例所示：
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Sales 表：
++---------+------------+------+----------+-------+
+| sale_id | product_id | year | quantity | price |
++---------+------------+------+----------+-------+ 
+| 1       | 100        | 2008 | 10       | 5000  |
+| 2       | 100        | 2009 | 12       | 5000  |
+| 7       | 200        | 2011 | 15       | 9000  |
++---------+------------+------+----------+-------+
+Product 表：
++------------+--------------+
+| product_id | product_name |
++------------+--------------+
+| 100        | Nokia        |
+| 200        | Apple        |
+| 300        | Samsung      |
++------------+--------------+
+输出：
++------------+------------+----------+-------+
+| product_id | first_year | quantity | price |
++------------+------------+----------+-------+ 
+| 100        | 2008       | 10       | 5000  |
+| 200        | 2011       | 15       | 9000  |
++------------+------------+----------+-------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select product_id, year first_year, quantity, price
+from(
+select product_id, year, quantity, price,
+rank() over (partition by product_id order by year asc) ranks
+from sales)
+where ranks = 1
+```
+
+## [1076. 项目员工II](https://leetcode.cn/problems/project-employees-ii/)
+
+表：`Project`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| project_id  | int     |
+| employee_id | int     |
++-------------+---------+
+(project_id, employee_id) 是该表的主键(具有唯一值的列的组合)。
+employee_id 是该表的外键(reference 列)。
+该表的每一行都表明 employee_id 的雇员正在处理 Project 表中 project_id 的项目。
+```
+
+表：`Employee`
+
+```
++------------------+---------+
+| Column Name      | Type    |
++------------------+---------+
+| employee_id      | int     |
+| name             | varchar |
+| experience_years | int     |
++------------------+---------+
+employee_id 是该表的主键(具有唯一值的列)。
+该表的每一行都包含一名雇员的信息。
+```
+
+ 
+
+编写一个解决方案来报告所有拥有最多员工的 **项目**。
+
+以 **任意顺序** 返回结果表。
+
+返回结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Project table:
++-------------+-------------+
+| project_id  | employee_id |
++-------------+-------------+
+| 1           | 1           |
+| 1           | 2           |
+| 1           | 3           |
+| 2           | 1           |
+| 2           | 4           |
++-------------+-------------+
+Employee table:
++-------------+--------+------------------+
+| employee_id | name   | experience_years |
++-------------+--------+------------------+
+| 1           | Khaled | 3                |
+| 2           | Ali    | 2                |
+| 3           | John   | 1                |
+| 4           | Doe    | 2                |
++-------------+--------+------------------+
+输出：
++-------------+
+| project_id  |
++-------------+
+| 1           |
++-------------+
+解释：
+第一个项目有3名员工，第二个项目有2名员工。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with count_num as (
+select project_id,count(employee_id) employee_num
+from project
+group by project_id)
+
+select c.project_id
+from count_num c
+where c.employee_num = (select max(employee_num) from count_num)
+```
+
+## [1082. 销售分析 I ](https://leetcode.cn/problems/sales-analysis-i/)
+
+产品表：`Product`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
+| unit_price   | int     |
++--------------+---------+
+product_id 是这个表的主键(具有唯一值的列)。
+该表的每一行显示每个产品的名称和价格。
+```
+
+销售表：`Sales`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| seller_id   | int     |
+| product_id  | int     |
+| buyer_id    | int     |
+| sale_date   | date    |
+| quantity    | int     |
+| price       | int     |
++------ ------+---------+
+这个表它可以有重复的行。 
+product_id 是 Product 表的外键(reference 列)。
+该表的每一行包含关于一个销售的一些信息。
+```
+
+ 
+
+编写解决方案，找出总销售额最高的销售者，如果有并列的，就都展示出来。
+
+以 **任意顺序** 返回结果表。
+
+返回结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Product 表：
++------------+--------------+------------+
+| product_id | product_name | unit_price |
++------------+--------------+------------+
+| 1          | S8           | 1000       |
+| 2          | G4           | 800        |
+| 3          | iPhone       | 1400       |
++------------+--------------+------------+
+Sales 表：
++-----------+------------+----------+------------+----------+-------+
+| seller_id | product_id | buyer_id | sale_date  | quantity | price |
++-----------+------------+----------+------------+----------+-------+
+| 1         | 1          | 1        | 2019-01-21 | 2        | 2000  |
+| 1         | 2          | 2        | 2019-02-17 | 1        | 800   |
+| 2         | 2          | 3        | 2019-06-02 | 1        | 800   |
+| 3         | 3          | 4        | 2019-05-13 | 2        | 2800  |
++-----------+------------+----------+------------+----------+-------+
+输出：
++-------------+
+| seller_id   |
++-------------+
+| 1           |
+| 3           |
++-------------+
+解释：Id 为 1 和 3 的销售者，销售总金额都为最高的 2800。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+
+with sale_ranks as (
+select seller_id,
+dense_rank() over (order by sum(price) desc) ranks
+from sales
+group by seller_id)
+
+select seller_id from sale_ranks where ranks=1
+```
+
+## [1083. 销售分析 II](https://leetcode.cn/problems/sales-analysis-ii/)
+
+表：`Product`
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| product_id   | int     |
+| product_name | varchar |
+| unit_price   | int     |
++--------------+---------+
+Product_id 是该表的主键(具有唯一值的列)。
+该表的每一行表示每种产品的名称和价格。
+```
+
+表：`Sales`
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| seller_id   | int     |
+| product_id  | int     |
+| buyer_id    | int     |
+| sale_date   | date    |
+| quantity    | int     |
+| price       | int     |
++------ ------+---------+
+这个表可能有重复的行。
+product_id 是 Product 表的外键(reference 列)。
+buyer_id 永远不会是 NULL。
+sale_date 永远不会是 NULL。
+该表的每一行都包含一次销售的一些信息。
+```
+
+ 
+
+编写一个解决方案，报告那些买了 *S8* 而没有买 *iPhone* 的 **买家**。注意，*S8* 和 *iPhone* 是 `Product` 表中显示的产品。
+
+以 **任意顺序** 返回结果表。
+
+结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Product table:
++------------+--------------+------------+
+| product_id | product_name | unit_price |
++------------+--------------+------------+
+| 1          | S8           | 1000       |
+| 2          | G4           | 800        |
+| 3          | iPhone       | 1400       |
++------------+--------------+------------+
+Sales table:
++-----------+------------+----------+------------+----------+-------+
+| seller_id | product_id | buyer_id | sale_date  | quantity | price |
++-----------+------------+----------+------------+----------+-------+
+| 1         | 1          | 1        | 2019-01-21 | 2        | 2000  |
+| 1         | 2          | 2        | 2019-02-17 | 1        | 800   |
+| 2         | 1          | 3        | 2019-06-02 | 1        | 800   |
+| 3         | 3          | 3        | 2019-05-13 | 2        | 2800  |
++-----------+------------+----------+------------+----------+-------+
+输出：
++-------------+
+| buyer_id    |
++-------------+
+| 1           |
++-------------+
+解释：
+id 为 1 的买家购买了一部 S8，但是却没有购买 iPhone，而 id 为 3 的买家却同时购买了这 2 部手机。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+with buy_product as (
+select s.buyer_id, p.product_name
+from sales s
+left join product p
+on s.product_id=p.product_id)
+
+
+select buyer_id
+from buy_product
+where product_name = 'S8' or product_name = 'iPhone'
+minus
+select buyer_id
+from buy_product
+where product_name = 'iPhone'
+```
+
+
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select s.buyer_id
+from sales s, product p
+where s.product_id = p.product_id and (p.product_name = 'S8')
+minus
+select s.buyer_id
+from sales s, product p
+where s.product_id = p.product_id and p.product_name = 'iPhone'
+```
+
+
+
+## [1098. 小众书籍](https://leetcode.cn/problems/unpopular-books/)
+
+书籍表 `Books`：
+
+```
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| book_id        | int     |
+| name           | varchar |
+| available_from | date    |
++----------------+---------+
+book_id 是这个表的主键（具有唯一值的列）。
+```
+
+订单表 `Orders`：
+
+```
++----------------+---------+
+| Column Name    | Type    |
++----------------+---------+
+| order_id       | int     |
+| book_id        | int     |
+| quantity       | int     |
+| dispatch_date  | date    |
++----------------+---------+
+order_id 是这个表的主键（具有唯一值的列）。
+book_id  是 Books 表的外键（reference 列）。
+```
+
+ 
+
+编写解决方案，筛选出过去一年中订单总量 **少于** `10` **本** 的 **书籍**，并且 **不考虑** 上架距今销售 **不满一个月** 的书籍 。**假设今天是** `2019-06-23` **。**
+
+返回结果表 **无顺序要求** 。
+
+结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Books 表：
++---------+--------------------+----------------+
+| book_id | name               | available_from |
++---------+--------------------+----------------+
+| 1       | "Kalila And Demna" | 2010-01-01     |
+| 2       | "28 Letters"       | 2012-05-12     |
+| 3       | "The Hobbit"       | 2019-06-10     |
+| 4       | "13 Reasons Why"   | 2019-06-01     |
+| 5       | "The Hunger Games" | 2008-09-21     |
++---------+--------------------+----------------+
+Orders 表：
++----------+---------+----------+---------------+
+| order_id | book_id | quantity | dispatch_date |
++----------+---------+----------+---------------+
+| 1        | 1       | 2        | 2018-07-26    |
+| 2        | 1       | 1        | 2018-11-05    |
+| 3        | 3       | 8        | 2019-06-11    |
+| 4        | 4       | 6        | 2019-06-05    |
+| 5        | 4       | 5        | 2019-06-20    |
+| 6        | 5       | 9        | 2009-02-02    |
+| 7        | 5       | 8        | 2010-04-13    |
++----------+---------+----------+---------------+
+输出：
++-----------+--------------------+
+| book_id   | name               |
++-----------+--------------------+
+| 1         | "Kalila And Demna" |
+| 2         | "28 Letters"       |
+| 5         | "The Hunger Games" |
++-----------+--------------------+
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+
+select b.book_id,b.name
+from books b
+left join (select book_id,sum(quantity) last_year_sales from orders
+where (to_date('2019-06-23','yyyy-mm-dd') - dispatch_date) <=365 
+group by book_id)s
+on b.book_id=s.book_id
+where b.book_id not in (select book_id from books where to_date('2019-06-23','yyyy-mm-dd')-available_from < 30)
+and s.last_year_sales < 10 or s.last_year_sales is null
+```
+
+## [571. 给定数字的频率查询中位数](https://leetcode.cn/problems/find-median-given-frequency-of-numbers/)
+
+`Numbers` 表：
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| num         | int  |
+| frequency   | int  |
++-------------+------+
+num 是这张表的主键(具有唯一值的列)。
+这张表的每一行表示某个数字在该数据库中的出现频率。
+```
+
+ 
+
+[**中位数**](https://baike.baidu.com/item/中位数/3087401) 是将数据样本中半数较高值和半数较低值分隔开的值。
+
+编写解决方案，解压 `Numbers` 表，报告数据库中所有数字的 **中位数** 。结果四舍五入至 **一位小数** 。
+
+返回结果如下例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入： 
+Numbers 表：
++-----+-----------+
+| num | frequency |
++-----+-----------+
+| 0   | 7         |
+| 1   | 1         |
+| 2   | 3         |
+| 3   | 1         |
++-----+-----------+
+输出：
++--------+
+| median |
++--------+
+| 0.0    |
++--------+
+解释：
+如果解压这个 Numbers 表，可以得到 [0, 0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 3] ，所以中位数是 (0 + 0) / 2 = 0 。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with t as (select sum(frequency) total_num from numbers),
+t1 as (select num, sum(frequency) over (order by num asc) cnt from numbers)
+
+select case when mod(total_num,2)=0 then ((select num from t1 where cnt >= total_num/2 and rownum=1)+(select num from t1 where cnt >= total_num/2+1 and rownum=1))/2
+else (select num from t1 where cnt >= total_num/2 and rownum=1) end median
+from t
+```
+
+## [2820. 选举结果](https://leetcode.cn/problems/election-results/)
+
+表：`Votes`
+
+```
++-------------+---------+ 
+| Column Name | Type    | 
++-------------+---------+ 
+| voter       | varchar | 
+| candidate   | varchar |
++-------------+---------+
+(voter, candidate) 是该表的主键（具有唯一值的列）。
+该表的每一行都包含选民及其候选人的姓名。
+```
+
+选举在一个城市进行，每个人都可以投票给 **一个或多个** 候选人，也可以选择 **不** 投票。每个人都有 `1` 票，所以如果他们投票给多个候选人，他们的选票会被平均分配。例如，如果一个人投票给 `2` 个候选人，这些候选人每人获得 `0.5` 张选票。
+
+编写一个解决方案来查找获得最多选票并赢得选举的候选人 `candidate` 。输出 **候选人** 的姓名，或者如果多个候选人的票数 **相等** ，则输出所有候选人的姓名。
+
+返回按 `candidate` **升序排序** 的结果表。
+
+查询结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入： 
+Votes table:
++----------+-----------+
+| voter    | candidate |
++----------+-----------+
+| Kathy    | null      |
+| Charles  | Ryan      |
+| Charles  | Christine |
+| Charles  | Kathy     |
+| Benjamin | Christine |
+| Anthony  | Ryan      |
+| Edward   | Ryan      |
+| Terry    | null      |
+| Evelyn   | Kathy     |
+| Arthur   | Christine |
++----------+-----------+
+输出：
++-----------+
+| candidate | 
++-----------+
+| Christine |  
+| Ryan      |  
++-----------+
+解释：
+- Kathy 和 Terry 选择不投票，导致他们的投票被记录为 0。 Charles 将他的选票分配给了三位候选人，相当于每位候选人得到 0.33 票。另一方面，Benjamin, Arthur, Anthony, Edward, 和 Evely 各自把票投给了一位候选人。
+- Ryan 和 Christine 总共获得了2.33票，而 Kathy 总共获得了 1.33 票。
+由于 Ryan 和 Christine 获得的票数相等，我们将按升序显示他们的名字。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with points as (
+select voter, 1/count(voter) points
+from votes
+where candidate is not null
+group by voter)
+
+select candidate
+from (select v.candidate candidate,
+rank() over (order by sum(points) desc) ranks 
+from votes v , points p
+where v.voter = p.voter
+group by v.candidate)
+where ranks = 1
+order by candidate asc
+```
+
+## [579. 查询员工的累计薪水](https://leetcode.cn/problems/find-cumulative-salary-of-an-employee/)
+
+表：`Employee`
+
+```
++-------------+------+
+| Column Name | Type |
++-------------+------+
+| id          | int  |
+| month       | int  |
+| salary      | int  |
++-------------+------+
+(id, month) 是该表的主键(具有唯一值的列的组合)。
+表中的每一行表示 2020 年期间员工一个月的工资。
+```
+
+ 
+
+编写一个解决方案，在一个统一的表中计算出每个员工的 **累计工资汇总** 。
+
+员工的 **累计工资汇总** 可以计算如下:
+
+- 对于该员工工作的每个月，将 **该月** 和 **前两个月** 的工资 **加** 起来。这是他们当月的 **3 个月总工资****和** 。如果员工在前几个月没有为公司工作，那么他们在前几个月的有效工资为 `0` 。
+- **不要** 在摘要中包括员工 **最近一个月** 的 3 个月总工资和。
+- **不要** 包括雇员 **没有工作** 的任何一个月的 3 个月总工资和。
+
+返回按 `id` **升序排序** 的结果表。如果 `id` 相等，请按 `month` **降序排序**。
+
+结果格式如下所示。
+
+ 
+
+**示例 1**
+
+```
+输入：
+Employee table:
++----+-------+--------+
+| id | month | salary |
++----+-------+--------+
+| 1  | 1     | 20     |
+| 2  | 1     | 20     |
+| 1  | 2     | 30     |
+| 2  | 2     | 30     |
+| 3  | 2     | 40     |
+| 1  | 3     | 40     |
+| 3  | 3     | 60     |
+| 1  | 4     | 60     |
+| 3  | 4     | 70     |
+| 1  | 7     | 90     |
+| 1  | 8     | 90     |
++----+-------+--------+
+输出：
++----+-------+--------+
+| id | month | Salary |
++----+-------+--------+
+| 1  | 7     | 90     |
+| 1  | 4     | 130    |
+| 1  | 3     | 90     |
+| 1  | 2     | 50     |
+| 1  | 1     | 20     |
+| 2  | 1     | 20     |
+| 3  | 3     | 100    |
+| 3  | 2     | 40     |
++----+-------+--------+
+解释：
+员工 “1” 有 5 条工资记录，不包括最近一个月的 “8”:
+- 第 '7' 个月为 90。
+- 第 '4' 个月为 60。
+- 第 '3' 个月是 40。
+- 第 '2' 个月为 30。
+- 第 '1' 个月为 20。
+因此，该员工的累计工资汇总为:
++----+-------+--------+
+| id | month | salary |
++----+-------+--------+
+| 1  | 7     | 90     |  (90 + 0 + 0)
+| 1  | 4     | 130    |  (60 + 40 + 30)
+| 1  | 3     | 90     |  (40 + 30 + 20)
+| 1  | 2     | 50     |  (30 + 20 + 0)
+| 1  | 1     | 20     |  (20 + 0 + 0)
++----+-------+--------+
+请注意，'7' 月的 3 个月的总和是 90，因为他们没有在 '6' 月或 '5' 月工作。
+
+员工 '2' 只有一个工资记录('1' 月)，不包括最近的 '2' 月。
++----+-------+--------+
+| id | month | salary |
++----+-------+--------+
+| 2  | 1     | 20     |  (20 + 0 + 0)
++----+-------+--------+
+
+员工 '3' 有两个工资记录，不包括最近一个月的 '4' 月:
+- 第 '3' 个月为 60 。
+- 第 '2' 个月是 40。
+因此，该员工的累计工资汇总为:
++----+-------+--------+
+| id | month | salary |
++----+-------+--------+
+| 3  | 3     | 100    |  (60 + 40 + 0)
+| 3  | 2     | 40     |  (40 + 0 + 0)
++----+-------+--------+
+```
+
+- 创建临时表，剔除掉每个ID的最后一个月的数据。
+- 使用两次left join, 匹配是否存在上个月， 上上个月的数据。存在使用salary，不存在取0
+- 将3个月的数据相加
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with temp as(
+select id, month, salary
+from(
+select id, month, salary,
+rank() over (partition by id order by month desc) ranks
+from employee)
+where ranks != 1)
+
+select t1.id, t1.month,t1.salary+nvl(t2.salary,0)+nvl(t3.salary,0) salary
+from temp t1
+left join temp t2
+on t1.month-1 = t2.month and t1.id=t2.id
+left join temp t3
+on t1.month-2 = t3.month and t1.id = t3.id
+order by t1.id asc, t1.month desc
+```
+
+- 创建临时表，剔除掉每个ID的最后一个月的数据。
+- 使用窗口函数，`range between`, 其中`range`表示具体的值。按照逻辑来进行窗口级别里的范围选择。如果是`raws beteen`，则是按照物理行来进行窗口级别里的范围选择。
+  - `preceding`，前N
+  - `following`，后M
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with temp as(
+select id, month, salary
+from(
+select id, month, salary,
+rank() over (partition by id order by month desc) ranks
+from employee)
+where ranks != 1)
+
+select id, month,
+sum(salary) over (partition by id order by month asc range between 2 preceding and 0 following) as salary
+from temp
+order by id asc,month desc
+```
+
+## [601. 体育馆的人流量](https://leetcode.cn/problems/human-traffic-of-stadium/)
+
+表：`Stadium`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| id            | int     |
+| visit_date    | date    |
+| people        | int     |
++---------------+---------+
+visit_date 是该表中具有唯一值的列。
+每日人流量信息被记录在这三列信息中：序号 (id)、日期 (visit_date)、 人流量 (people)
+每天只有一行记录，日期随着 id 的增加而增加
+```
+
+ 
+
+编写解决方案找出每行的人数大于或等于 `100` 且 `id` 连续的三行或更多行记录。
+
+返回按 `visit_date` **升序排列** 的结果表。
+
+查询结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入：
+Stadium 表:
++------+------------+-----------+
+| id   | visit_date | people    |
++------+------------+-----------+
+| 1    | 2017-01-01 | 10        |
+| 2    | 2017-01-02 | 109       |
+| 3    | 2017-01-03 | 150       |
+| 4    | 2017-01-04 | 99        |
+| 5    | 2017-01-05 | 145       |
+| 6    | 2017-01-06 | 1455      |
+| 7    | 2017-01-07 | 199       |
+| 8    | 2017-01-09 | 188       |
++------+------------+-----------+
+输出：
++------+------------+-----------+
+| id   | visit_date | people    |
++------+------------+-----------+
+| 5    | 2017-01-05 | 145       |
+| 6    | 2017-01-06 | 1455      |
+| 7    | 2017-01-07 | 199       |
+| 8    | 2017-01-09 | 188       |
++------+------------+-----------+
+解释：
+id 为 5、6、7、8 的四行 id 连续，并且每行都有 >= 100 的人数记录。
+请注意，即使第 7 行和第 8 行的 visit_date 不是连续的，输出也应当包含第 8 行，因为我们只需要考虑 id 连续的记录。
+不输出 id 为 2 和 3 的行，因为至少需要三条 id 连续的记录。
+```
+
+
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with more_100 as(
+select id, visit_date,people
+from stadium
+where people >= 100)
+
+
+select id, to_char(visit_date,'yyyy-mm-dd') visit_date, people
+from(
+select id, visit_date, people,
+count(id) over (partition by id-rownum) counts
+from more_100
+)
+where counts >= 3
+order by visit_date asc
+```
+
+
+
+## [615. 平均工资：部门与公司比较](https://leetcode.cn/problems/average-salary-departments-vs-company/)
+
+
+
+表：`Salary`
+
+```
++-------------+------+
+| 列名        | 类型 |
++-------------+------+
+| id          | int  |
+| employee_id | int  |
+| amount      | int  |
+| pay_date    | date |
++-------------+------+
+在 SQL 中，id 是该表的主键列。
+该表的每一行表示一个员工一个月的薪资。
+employee_id 是来自 Employee 表的外键（reference 列）。
+```
+
+ 
+
+表： `Employee`
+
+```
++---------------+------+
+| 列名          | 类型 |
++---------------+------+
+| employee_id   | int  |
+| department_id | int  |
++---------------+------+
+在 SQL 中，employee_id 是该表的主键列。
+该表的每一行表示一个员工所属的部门。
+```
+
+ 
+
+找出各个部门员工的平均薪资与公司平均薪资之间的比较结果（**更高 / 更低 / 相同**）。
+
+以 **任意顺序** 返回结果表。
+
+结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Salary 表:
++----+-------------+--------+------------+
+| id | employee_id | amount | pay_date   |
++----+-------------+--------+------------+
+| 1  | 1           | 9000   | 2017/03/31 |
+| 2  | 2           | 6000   | 2017/03/31 |
+| 3  | 3           | 10000  | 2017/03/31 |
+| 4  | 1           | 7000   | 2017/02/28 |
+| 5  | 2           | 6000   | 2017/02/28 |
+| 6  | 3           | 8000   | 2017/02/28 |
++----+-------------+--------+------------+
+Employee 表:
++-------------+---------------+
+| employee_id | department_id |
++-------------+---------------+
+| 1           | 1             |
+| 2           | 2             |
+| 3           | 2             |
++-------------+---------------+
+输出：
++-----------+---------------+------------+
+| pay_month | department_id | comparison |
++-----------+---------------+------------+
+| 2017-02   | 1             | same       |
+| 2017-03   | 1             | higher     |
+| 2017-02   | 2             | same       |
+| 2017-03   | 2             | lower      |
++-----------+---------------+------------+
+解释：
+在三月，公司的平均工资是 (9000+6000+10000)/3 = 8333.33...
+部门 '1' 的平均薪资是 9000，因为该部门只有一个员工，其员工号为 '1'。因为 9000 > 8333.33，所以比较结果为 'higher'
+部门 '2' 的平均薪资是（6000 + 10000）/ 2 = 8000，该平均薪资是员工号 '2' 和 '3' 的薪资的平均值。因为 8000 < 8333.33，比较结果为 'lower'。
+
+根据同样的公式，对于二月份的平均薪资比较，结果为 'same'，因为部门 '1' 和 '2' 都与公司的平均薪资相同，即为 7000。
+```
+
+每个月进行比较
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with average_company as (
+    select to_char(pay_date, 'yyyy-mm') pay_month, avg(amount) avg_salary 
+    from salary 
+    group by to_char(pay_date, 'yyyy-mm')
+),
+average_department as (
+    select to_char(s.pay_date,'yyyy-mm') pay_month, e.department_id, avg(s.amount) avg_salary 
+    from salary s
+    left join employee e
+    on s.employee_id = e.employee_id
+    group by e.department_id, to_char(s.pay_date,'yyyy-mm')
+)
+
+
+select d.pay_month, d.department_id,
+case when d.avg_salary > c.avg_salary then 'higher'
+when d.avg_salary = c.avg_salary then 'same'
+else 'lower' end comparison
+from average_department d
+left join average_company c
+on d.pay_month = c.pay_month
+```
+
+
+
