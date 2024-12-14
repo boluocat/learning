@@ -11215,5 +11215,305 @@ left join average_company c
 on d.pay_month = c.pay_month
 ```
 
+## [618. 学生地理信息报告](https://leetcode.cn/problems/students-report-by-geography/)
 
+
+
+表： `student` 
+
+```
++-------------+---------+
+| Column Name | Type    |
++-------------+---------+
+| name        | varchar |
+| continent   | varchar |
++-------------+---------+
+该表可能包含重复的行。
+该表的每一行表示学生的名字和他们来自的大陆。
+```
+
+ 
+
+一所学校有来自亚洲、欧洲和美洲的学生。
+
+编写解决方案实现对大洲（continent）列的 [透视表](https://zh.wikipedia.org/wiki/透视表) 操作，使得每个`学生`按照姓名的**字母顺序**依次排列在对应的大洲下面。输出的标题应依次为`美洲（America）、亚洲（Asia）和欧洲（Europe）。`
+
+测试用例的生成保证来自美国的学生人数不少于亚洲或欧洲的学生人数。
+
+返回结果格式如下所示。
+
+ 
+
+**示例 1:**
+
+```
+输入: 
+Student table:
++--------+-----------+
+| name   | continent |
++--------+-----------+
+| Jane   | America   |
+| Pascal | Europe    |
+| Xi     | Asia      |
+| Jack   | America   |
++--------+-----------+
+输出: 
++---------+------+--------+
+| America | Asia | Europe |
++---------+------+--------+
+| Jack    | Xi   | Pascal |
+| Jane    | null | null   |
++---------+------+--------+
+```
+
+
+
+```sql
+/* Write your PL/SQL query statement below */
+select America,Asia, Europe
+from(
+select row_number() over (partition by continent order by name) rn, name, continent
+from student) s
+pivot (max(name) for continent in ('America' as America, 'Asia' as Asia, 'Europe' as Europe))
+order by rn
+```
+
+## [1097. 游戏玩法分析 V](https://leetcode.cn/problems/game-play-analysis-v/)
+
+表：`Activity` 
+
+```
++--------------+---------+
+| Column Name  | Type    |
++--------------+---------+
+| player_id    | int     |
+| device_id    | int     |
+| event_date   | date    |
+| games_played | int     |
++--------------+---------+
+（player_id，event_date）是此表的主键(具有唯一值的列的组合)
+这张表显示了某些游戏的玩家的活动情况
+每一行表示一个玩家的记录，在某一天使用某个设备注销之前，登录并玩了很多游戏（可能是 0）
+```
+
+ 
+
+玩家的 **安装日期** 定义为该玩家的第一个登录日。
+
+我们将日期 x 的 **第一天留存率** 定义为：假定安装日期为 `X` 的玩家的数量为 `N` ，其中在 `X` 之后的一天重新登录的玩家数量为 `M`，`M/N` 就是第一天留存率，**四舍五入到小数点后两位**。
+
+编写解决方案，报告所有安装日期、当天安装游戏的玩家数量和玩家的 **第一天留存率**。
+
+以 **任意顺序** 返回结果表。
+
+结果格式如下所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Activity 表：
++-----------+-----------+------------+--------------+
+| player_id | device_id | event_date | games_played |
++-----------+-----------+------------+--------------+
+| 1         | 2         | 2016-03-01 | 5            |
+| 1         | 2         | 2016-03-02 | 6            |
+| 2         | 3         | 2017-06-25 | 1            |
+| 3         | 1         | 2016-03-01 | 0            |
+| 3         | 4         | 2016-07-03 | 5            |
++-----------+-----------+------------+--------------+
+输出：
++------------+----------+----------------+
+| install_dt | installs | Day1_retention |
++------------+----------+----------------+
+| 2016-03-01 | 2        | 0.50           |
+| 2017-06-25 | 1        | 0.00           |
++------------+----------+----------------+
+解释：
+玩家 1 和 3 在 2016-03-01 安装了游戏，但只有玩家 1 在 2016-03-02 重新登录，所以 2016-03-01 的第一天留存率是 1/2=0.50
+玩家 2 在 2017-06-25 安装了游戏，但在 2017-06-26 没有重新登录，因此 2017-06-25 的第一天留存率为 0/1=0.00
+```
+
+
+
+```sql
+/* Write your PL/SQL query statement below */
+
+with plays_statistic as(
+select event_date, player_id,
+dense_rank() over (partition by player_id order by event_date asc) ranks,
+lead(event_date, 1, event_date) over (partition by player_id order by event_date asc) next_event_date
+from activity)
+
+
+select to_char(plays_statistic.event_date) as install_dt, 
+       count(*) as installs, 
+       round(sum(case when plays_statistic.next_event_date - plays_statistic.event_date = 1 then 1 else 0 end)
+             / count(*), 2) as Day1_retention
+from plays_statistic
+where plays_statistic.ranks = 1
+group by plays_statistic.event_date
+
+```
+
+## [1107. 每日新用户统计](https://leetcode.cn/problems/new-users-daily-count/)
+
+`Traffic` 表：
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| user_id       | int     |
+| activity      | enum    |
+| activity_date | date    |
++---------------+---------+
+该表可能有重复的行。
+activity 列是 ENUM 类型，可能取 ('login', 'logout', 'jobs', 'groups', 'homepage') 几个值之一。
+```
+
+ 
+
+编写解决方案，找出从今天起最多 90 天内，每个日期该日期首次登录的用户数。假设今天是 **2019-06-30** 。
+
+以 **任意顺序** 返回结果表。
+
+结果格式如下所示。
+
+ 
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Traffic 表：
++---------+----------+---------------+
+| user_id | activity | activity_date |
++---------+----------+---------------+
+| 1       | login    | 2019-05-01    |
+| 1       | homepage | 2019-05-01    |
+| 1       | logout   | 2019-05-01    |
+| 2       | login    | 2019-06-21    |
+| 2       | logout   | 2019-06-21    |
+| 3       | login    | 2019-01-01    |
+| 3       | jobs     | 2019-01-01    |
+| 3       | logout   | 2019-01-01    |
+| 4       | login    | 2019-06-21    |
+| 4       | groups   | 2019-06-21    |
+| 4       | logout   | 2019-06-21    |
+| 5       | login    | 2019-03-01    |
+| 5       | logout   | 2019-03-01    |
+| 5       | login    | 2019-06-21    |
+| 5       | logout   | 2019-06-21    |
++---------+----------+---------------+
+输出：
++------------+-------------+
+| login_date | user_count  |
++------------+-------------+
+| 2019-05-01 | 1           |
+| 2019-06-21 | 2           |
++------------+-------------+
+解释：
+请注意，我们只关心用户数非零的日期.
+ID 为 5 的用户第一次登陆于 2019-03-01，因此他不算在 2019-06-21 的的统计内。
+```
+
+
+
+```sql
+with logined_user as (
+select user_id
+from traffic
+where to_date('2019-06-30','yyyy-mm-dd') - activity_date > 90 and activity = 'login'),
+all_login_user as (
+    select distinct user_id, activity_date,
+    rank() over (partition by user_id order by activity_date asc) ranks
+    from traffic
+    where to_date('2019-06-30','yyyy-mm-dd') - activity_date <= 90 
+    and activity = 'login'
+)
+
+select to_char(activity_date,'yyyy-mm-dd') login_date, count(user_id) user_count
+from (select user_id, activity_date, ranks from all_login_user)
+where ranks = 1
+and user_id not in (select user_id from logined_user)
+group by activity_date
+order by activity_date
+```
+
+## [1113. 报告的记录](https://leetcode.cn/problems/reported-posts/)
+
+动作表：`Actions`
+
+```
++---------------+---------+
+| Column Name   | Type    |
++---------------+---------+
+| user_id       | int     |
+| post_id       | int     |
+| action_date   | date    | 
+| action        | enum    |
+| extra         | varchar |
++---------------+---------+
+此表可能会有重复的行。
+action 字段是 ENUM 类型的，包含:('view', 'like', 'reaction', 'comment', 'report', 'share')
+extra 包含关于 action 的可选信息，例如举报的原因或反馈的类型。
+当 action 为 'report' 时 extra 不会为 NULL。
+```
+
+ 
+
+编写解决方案，针对每个举报原因统计昨天的举报帖子数量。假设今天是 `2019-07-05` 。post_id发布的同一个举报原因不做重复统计。
+
+返回结果表 **无顺序要求** 。
+
+结果格式如下示例所示。
+
+ 
+
+**示例 1：**
+
+```
+输入：
+Actions table:
++---------+---------+-------------+--------+--------+
+| user_id | post_id | action_date | action | extra  |
++---------+---------+-------------+--------+--------+
+| 1       | 1       | 2019-07-01  | view   | null   |
+| 1       | 1       | 2019-07-01  | like   | null   |
+| 1       | 1       | 2019-07-01  | share  | null   |
+| 2       | 4       | 2019-07-04  | view   | null   |
+| 2       | 4       | 2019-07-04  | report | spam   |
+| 3       | 4       | 2019-07-04  | view   | null   |
+| 3       | 4       | 2019-07-04  | report | spam   |
+| 4       | 3       | 2019-07-02  | view   | null   |
+| 4       | 3       | 2019-07-02  | report | spam   |
+| 5       | 2       | 2019-07-04  | view   | null   |
+| 5       | 2       | 2019-07-04  | report | racism |
+| 5       | 5       | 2019-07-04  | view   | null   |
+| 5       | 5       | 2019-07-04  | report | racism |
++---------+---------+-------------+--------+--------+
+输出：
++---------------+--------------+
+| report_reason | report_count |
++---------------+--------------+
+| spam          | 1            |
+| racism        | 2            |
++---------------+--------------+ 
+解释：注意，我们只关心举报帖数量非零的举报原因。
+```
+
+```sql
+/* Write your PL/SQL query statement below */
+
+select extra report_reason, count(distinct post_id) report_count
+from actions
+where action = 'report'
+and action_date + 1 = '2019-07-05'
+group by extra
+```
 
